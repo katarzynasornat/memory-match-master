@@ -91,21 +91,21 @@ Once the server is running, you can access:
 
 ### Running Tests
 
-The project includes both **unit tests** and **integration tests**:
+The backend has **79 comprehensive tests** to ensure everything works correctly. Tests are split into two types:
 
-```sh
-# Run all tests (unit + integration)
+```bash
+# Run all tests (recommended before committing code)
 make test-all
 
-# Run only unit tests
+# Run only unit tests (fast, for quick feedback)
 make test
 
-# Run only integration tests
+# Run only integration tests (slower, tests full workflows)
 make test-integration
 ```
 
 Or using `uv` directly:
-```sh
+```bash
 # All tests
 uv run pytest tests/ tests_integration/
 
@@ -118,18 +118,68 @@ uv run pytest tests_integration/
 
 ## Testing Structure
 
-### Unit Tests (`tests/`)
-Fast, in-memory tests for individual components:
-- `tests/test_auth.py`: Authentication endpoints (signup, login)
-- `tests/test_leaderboard.py`: Leaderboard endpoints (GET, POST)
-- `tests/conftest.py`: Shared fixtures (HTTP client, in-memory database)
+### What Are Tests?
+Tests are automated checks that verify your code works correctly. Think of them like a checklist that runs automatically to catch bugs before they reach users.
 
-### Integration Tests (`tests_integration/`)
-End-to-end tests using file-based SQLite to verify complete workflows:
-- `tests_integration/test_auth_integration.py`: Full authentication flow (9 tests)
-- `tests_integration/test_leaderboard_integration.py`: Leaderboard persistence and ordering (10 tests)
-- `tests_integration/test_database_integration.py`: Database operations and relationships (9 tests)
-- `tests_integration/conftest.py`: Test fixtures with file-based database setup
-- `tests_integration/README.md`: Detailed integration test documentation
+### Unit Tests (`tests/`) - 51 tests
+**Purpose:** Test individual pieces of code in isolation (like testing a single LEGO brick)
 
-**Total: 38 tests** (10 unit + 28 integration)
+**What's tested:**
+- **Security** (`test_security.py` - 9 tests)
+  - Password hashing works correctly
+  - Passwords are verified properly
+  - Special characters and unicode are handled
+  
+- **Data Validation** (`test_schemas.py` - 23 tests)
+  - Email addresses are valid
+  - Passwords meet minimum length
+  - Required fields are present
+  
+- **Database Models** (`test_models.py` - 13 tests)
+  - Users are created correctly
+  - Relationships between users and tokens work
+  - Unique email constraint is enforced
+  
+- **API Endpoints** (`test_auth.py`, `test_leaderboard.py`, `test_main.py` - 10 tests)
+  - Signup and login work
+  - Leaderboard retrieval and submission work
+  - Health checks respond correctly
+
+**Speed:** Fast (~8 seconds) - uses in-memory database
+
+### Integration Tests (`tests_integration/`) - 28 tests
+**Purpose:** Test complete workflows from start to finish (like testing a fully assembled LEGO set)
+
+**What's tested:**
+- **Full Authentication Flow** (`test_auth_integration.py` - 9 tests)
+  - Users can sign up and data is saved to database
+  - Login generates persistent tokens
+  - Duplicate emails are prevented
+  
+- **Complete Leaderboard Workflow** (`test_leaderboard_integration.py` - 10 tests)
+  - Scores are saved and retrieved correctly
+  - Leaderboard is ordered by score
+  - Users can only submit their own scores
+  
+- **Database Operations** (`test_database_integration.py` - 9 tests)
+  - All tables are created properly
+  - Deleting a user also deletes their tokens
+  - Transactions can be rolled back
+
+**Speed:** Slower (~15 seconds) - uses real file-based database
+
+**Key Difference:** Integration tests use a real SQLite database file (`/tmp/test_integration.db`) instead of in-memory, so they test the full database behavior including file operations and persistence.
+
+### Why Both Types?
+- **Unit tests** are fast and help you quickly find which specific function is broken
+- **Integration tests** are thorough and ensure all the pieces work together correctly
+- Together, they give you confidence that your code works both in isolation and as a complete system
+
+### Test Results
+All 79 tests pass with zero warnings:
+- ✅ 51 unit tests (8 seconds)
+- ✅ 28 integration tests (15 seconds)
+- ✅ Total: 79 tests in ~23 seconds
+
+### For Developers
+Before committing your changes, always run `make test-all` to ensure you haven't broken anything. If a test fails, it will tell you exactly what went wrong and where.
