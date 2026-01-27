@@ -4,29 +4,35 @@ A high-performance Memory Match game with a Neon Arcade theme, featuring a FastA
 
 ## 🚀 Getting Started
 
-To run the full application, you need to start both the backend and the frontend.
-
-### 1. Backend (FastAPI)
-
-Prerequisites: [uv](https://github.com/astral-sh/uv)
+### The Quick Way (Run both at once)
+Prerequisites: [uv](https://github.com/astral-sh/uv) and Node.js.
 
 ```sh
-cd backend
-uv sync
-uv run python -m app.main
+# One-time setup
+npm run install:all
+
+# Run both frontend and backend concurrently
+npm run dev
 ```
-The backend API will be available at `http://localhost:3000`.
+The backend will be at `http://localhost:3000` and the frontend at `http://localhost:8080`.
 
-### 2. Frontend (React + Vite)
+---
 
-Prerequisites: Node.js 18+
+### Manual Setup (Step-by-Step)
 
+#### 1. Backend (FastAPI)
+```sh
+cd backend
+make install
+make dev
+```
+
+#### 2. Frontend (React + Vite)
 ```sh
 cd frontend
 npm install
 npm run dev
 ```
-The frontend will be available at `http://localhost:8080` (or the port shown in your terminal).
 
 ## 📁 Project Structure
 
@@ -45,10 +51,15 @@ The frontend will be available at `http://localhost:8080` (or the port shown in 
 
 ## 🧪 Testing
 
+### Run All Tests (Root)
+```sh
+npm test
+```
+
 ### Backend Tests
 ```sh
 cd backend
-uv run pytest
+make test
 ```
 
 ### Frontend Tests

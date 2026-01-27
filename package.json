@@ -1,0 +1,27 @@
+{
+  "name": "memory-match-master",
+  "version": "1.0.0",
+  "description": "A high-performance Memory Match game with a Neon Arcade theme, featuring a FastAPI backend and a React/Vite frontend.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"magenta.bold,cyan.bold\" \"make -C backend dev\" \"npm run dev --prefix frontend\"",
+    "test": "npm run test --prefix frontend && make -C backend test",
+    "lint": "make -C backend lint && npm run lint --prefix frontend",
+    "install:all": "npm install && npm install --prefix frontend && make -C backend install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/katarzynasornat/memory-match-master.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/katarzynasornat/memory-match-master/issues"
+  },
+  "homepage": "https://github.com/katarzynasornat/memory-match-master#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
