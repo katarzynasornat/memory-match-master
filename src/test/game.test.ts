@@ -83,10 +83,10 @@ describe('Memory Game Logic', () => {
 });
 
 describe('Game Rules', () => {
-  it('should have correct max failures (3)', () => {
+  it('should have correct max failures (10)', () => {
     // This is tested implicitly through the hook, but we can verify the constant
-    const MAX_FAILURES = 3;
-    expect(MAX_FAILURES).toBe(3);
+    const MAX_FAILURES = 10;
+    expect(MAX_FAILURES).toBe(10);
   });
 
   it('should have correct grid size (4x4 = 16 cards)', () => {

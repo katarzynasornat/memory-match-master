@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useMemoryGame } from '@/hooks/useMemoryGame';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { GameBoard } from './game/GameBoard';
@@ -17,17 +17,19 @@ interface GameScreenProps {
 export const GameScreen = ({ username, onLogout }: GameScreenProps) => {
   const game = useMemoryGame();
   const { entries, addEntry } = useLeaderboard();
-  const [scoreSubmitted, setScoreSubmitted] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [hasSubmittedCurrentGame, setHasSubmittedCurrentGame] = useState(false);
 
-  const handleSubmitScore = () => {
-    addEntry(username, game.score, game.round);
-    setScoreSubmitted(true);
-  };
+  const handleSubmitScore = useCallback(() => {
+    if (!hasSubmittedCurrentGame) {
+      addEntry(username, game.score, game.round);
+      setHasSubmittedCurrentGame(true);
+    }
+  }, [hasSubmittedCurrentGame, addEntry, username, game.score, game.round]);
 
   const handlePlayAgain = () => {
     game.resetGame();
-    setScoreSubmitted(false);
+    setHasSubmittedCurrentGame(false);
   };
 
   return (
@@ -115,7 +117,6 @@ export const GameScreen = ({ username, onLogout }: GameScreenProps) => {
         round={game.round}
         onPlayAgain={handlePlayAgain}
         onSubmitScore={handleSubmitScore}
-        scoreSubmitted={scoreSubmitted}
       />
 
       <RoundCompleteModal

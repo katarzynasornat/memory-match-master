@@ -10,7 +10,7 @@ interface GameBoardProps {
 
 export const GameBoard = ({ cards, onCardClick, isProcessing, isGameOver }: GameBoardProps) => {
   return (
-    <div className="grid grid-cols-4 gap-2 md:gap-4 max-w-md mx-auto">
+    <div className="grid grid-cols-4 gap-3 md:gap-5 w-full max-w-2xl mx-auto">
       {cards.map(card => (
         <MemoryCard
           key={card.id}
