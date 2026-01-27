@@ -58,6 +58,11 @@ The project uses **SQLAlchemy** with **Alembic** for migrations:
 - **Production**: Supports PostgreSQL via the `DATABASE_URL` environment variable.
 - **Security**: Passwords are securely hashed using `bcrypt`.
 
+### 🔍 How to Verify Locally
+1. **Initial Run**: Run `npm run dev`. The file `backend/game.db` will be created automatically.
+2. **Check Mock Data**: Visit `http://localhost:3000/leaderboard` in your browser. You should see the 10 pre-populated "arcade" scores.
+3. **Test Persistence**: Create an account in the game, submit a score, and restart the backend. Your data will remain saved!
+
 ## 🧪 Testing
 
 ### Run All Tests (Root)
