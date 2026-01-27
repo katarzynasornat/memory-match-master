@@ -43,6 +43,8 @@ make install    # Install dependencies
 make dev        # Start development server (hot-reload)
 make run        # Start production server
 make test       # Run tests
+make lint       # Run lint checks
+make format     # Format code
 ```
 
 ### Manual Commands
