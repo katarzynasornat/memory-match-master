@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: Memory Match API
+  description: Backend API for the Memory Match arcade game, including authentication and global leaderboard.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /auth/signup:
+    post:
+      summary: Register a new player
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: player@example.com
+                password:
+                  type: string
+                  format: password
+                  minLength: 4
+                  example: "password123"
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input or user already exists
+
+  /auth/login:
+    post:
+      summary: Authenticate a player
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: player@example.com
+                password:
+                  type: string
+                  format: password
+                  example: "password123"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /leaderboard:
+    get:
+      summary: Get top leaderboard entries
+      tags:
+        - Leaderboard
+      responses:
+        '200':
+          description: List of top scores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+    post:
+      summary: Submit a new score
+      tags:
+        - Leaderboard
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - score
+                - round
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: player@example.com
+                score:
+                  type: integer
+                  example: 1250
+                round:
+                  type: integer
+                  example: 5
+                date:
+                  type: string
+                  format: date-time
+                  example: "2024-01-27T21:30:00Z"
+      responses:
+        '201':
+          description: Score submitted successfully
+        '401':
+          description: Unauthorized
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: JWT or session token
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        score:
+          type: integer
+        round:
+          type: integer
+        date:
+          type: string
+          format: date-time
+      required:
+        - email
+        - score
+        - round
+        - date
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
