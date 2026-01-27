@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { LeaderboardEntry, LeaderboardEntryCreate } from '@/types/api';
@@ -19,13 +20,15 @@ export const useLeaderboard = (token?: string | null) => {
     },
   });
 
+  const addEntry = useCallback((email: string, score: number, round: number) => {
+    if (!token) return Promise.reject(new Error('Authentication required'));
+    return addEntryMutation.mutateAsync({ email, score, round });
+  }, [token, addEntryMutation.mutateAsync]);
+
   return {
     entries,
     isLoading,
-    addEntry: (email: string, score: number, round: number) => {
-      if (!token) return Promise.reject(new Error('Authentication required'));
-      return addEntryMutation.mutateAsync({ email, score, round });
-    },
+    addEntry,
     refresh: refetch,
     isSubmitting: addEntryMutation.isPending,
   };

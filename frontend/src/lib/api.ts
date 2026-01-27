@@ -11,7 +11,8 @@ export const api = {
         });
         if (!response.ok) {
             const error = await response.json().catch(() => ({ detail: 'An error occurred' }));
-            throw new Error(error.detail || 'API request failed');
+            console.error(`API Error [${response.status}] ${path}:`, error);
+            throw new Error(error.detail || `API request failed (${response.status})`);
         }
         return response.json();
     },
@@ -30,7 +31,8 @@ export const api = {
         });
         if (!response.ok) {
             const error = await response.json().catch(() => ({ detail: 'An error occurred' }));
-            throw new Error(error.detail || 'API request failed');
+            console.error(`API Error [${response.status}] ${path}:`, error);
+            throw new Error(error.detail || `API request failed (${response.status})`);
         }
         return response.json();
     },

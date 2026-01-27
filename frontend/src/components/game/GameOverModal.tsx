@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -23,10 +23,18 @@ export const GameOverModal = ({
   onPlayAgain,
   onSubmitScore,
 }: GameOverModalProps) => {
+  const submissionAttempted = useRef(false);
+
   // Auto-submit score when modal opens
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !submissionAttempted.current) {
+      submissionAttempted.current = true;
       onSubmitScore();
+    }
+
+    // Reset the ref when modal closes so it can submit again next game
+    if (!isOpen) {
+      submissionAttempted.current = false;
     }
   }, [isOpen, onSubmitScore]);
 
