@@ -44,4 +44,7 @@ uv sync
 
 # Run the application
 uv run main.py
+
+# Run tests
+uv run pytest
 ```
