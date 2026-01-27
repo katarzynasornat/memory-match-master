@@ -8,9 +8,21 @@ class MockDatabase:
         self.users: Dict[str, dict] = {}  # email -> {user_obj, password}
         self.leaderboard: List[LeaderboardEntry] = [
             LeaderboardEntry(email="pro_player@example.com", score=5000, round=10, date=datetime.now()),
+            LeaderboardEntry(email="neon_god@example.com", score=4800, round=9, date=datetime.now()),
             LeaderboardEntry(email="gamer123@example.com", score=3500, round=7, date=datetime.now()),
             LeaderboardEntry(email="memory_master@example.com", score=2800, round=6, date=datetime.now()),
+            LeaderboardEntry(email="arcade_king@example.com", score=2500, round=5, date=datetime.now()),
+            LeaderboardEntry(email="quick_fingers@example.com", score=2100, round=4, date=datetime.now()),
+            LeaderboardEntry(email="chill_player@example.com", score=1500, round=3, date=datetime.now()),
+            LeaderboardEntry(email="newbie@example.com", score=800, round=2, date=datetime.now()),
+            LeaderboardEntry(email="casual@example.com", score=500, round=1, date=datetime.now()),
+            LeaderboardEntry(email="tester@example.com", score=300, round=1, date=datetime.now()),
         ]
+        
+        # Pre-populate some users for testing (password is 'password123' for all)
+        self.create_user("player@example.com", "password123")
+        self.create_user("test@example.com", "password")
+        self.create_user("tester@example.com", "pass")
 
     def create_user(self, email: str, password: str) -> User:
         user_id = uuid.uuid4()
