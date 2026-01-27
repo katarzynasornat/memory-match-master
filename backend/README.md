@@ -36,7 +36,17 @@ powershell -c "irel ast.sh/uv/install.ps1 | iex"
 
 ### Getting Started
 
-Once `uv` is installed, you can use it to manage the project:
+Once `uv` is installed, you can use the provided `Makefile` for convenience:
+
+```sh
+make install    # Install dependencies
+make dev        # Start development server (hot-reload)
+make run        # Start production server
+make test       # Run tests
+```
+
+### Manual Commands
+If you prefer running commands manually:
 ### Running the Server
 
 1. **Install dependencies**:
