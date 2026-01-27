@@ -39,15 +39,24 @@ npm run dev
 ```text
 .
 ├── backend/            # FastAPI Application
-│   ├── app/            # Core logic (models, routes, mock DB)
+├── backend/            # FastAPI Application
+│   ├── app/            # Core logic (models, schemas, routes)
+│   ├── alembic/        # Database migrations
 │   ├── openapi.yaml    # API Specification
-│   └── test_main.py    # Integration tests
+│   └── tests/          # Backend test suite
 ├── frontend/           # React/Vite Application
 │   ├── src/hooks/      # Custom hooks (Auth, Leaderboard, Game)
 │   ├── src/components/ # UI Components
 │   └── src/test/       # Frontend test suite
 └── AGENTS.md           # Instructions for AI development
 ```
+
+## 🗄️ Database Persistence
+
+The project uses **SQLAlchemy** with **Alembic** for migrations:
+- **Local**: Uses SQLite (`game.db`) automatically on first run.
+- **Production**: Supports PostgreSQL via the `DATABASE_URL` environment variable.
+- **Security**: Passwords are securely hashed using `bcrypt`.
 
 ## 🧪 Testing
 
@@ -71,5 +80,5 @@ npm test
 ## 🛠️ Technology Stack
 
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS, Shadcn UI, Vitest.
-- **Backend**: Python, FastAPI, Pydantic, pytest, `uv`.
-- **Database**: Mock in-memory (extensible to SQLite/PostgreSQL).
+- **Backend**: Python, FastAPI, SQLAlchemy, Alembic, bcrypt, pytest, `uv`.
+- **Database**: SQLite (local) / PostgreSQL (production).
