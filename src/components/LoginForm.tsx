@@ -77,7 +77,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
         {/* Rules */}
         <div className="text-center text-sm text-muted-foreground space-y-1">
           <p>🎯 Match all 8 pairs to win each round</p>
-          <p>❌ Only 3 mistakes allowed per round</p>
+          <p>❌ Only 10 mistakes allowed per round</p>
           <p>🏆 Chain rounds for bonus points!</p>
         </div>
       </div>

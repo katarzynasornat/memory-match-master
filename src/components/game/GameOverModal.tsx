@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -15,7 +14,6 @@ interface GameOverModalProps {
   round: number;
   onPlayAgain: () => void;
   onSubmitScore: () => void;
-  scoreSubmitted: boolean;
 }
 
 export const GameOverModal = ({
@@ -24,24 +22,17 @@ export const GameOverModal = ({
   round,
   onPlayAgain,
   onSubmitScore,
-  scoreSubmitted,
 }: GameOverModalProps) => {
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-
+  // Auto-submit score when modal opens
   useEffect(() => {
-    if (!isOpen) {
-      setHasSubmitted(false);
+    if (isOpen) {
+      onSubmitScore();
     }
-  }, [isOpen]);
-
-  const handleSubmit = () => {
-    onSubmitScore();
-    setHasSubmitted(true);
-  };
+  }, [isOpen, onSubmitScore]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="neon-box-accent bg-card">
+    <Dialog open={isOpen}>
+      <DialogContent className="neon-box-accent bg-card" hideCloseButton>
         <DialogHeader>
           <DialogTitle className="text-2xl font-display text-center text-accent">
             Game Over
@@ -55,28 +46,17 @@ export const GameOverModal = ({
             </p>
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex-col gap-2 sm:flex-col">
-          {!hasSubmitted && !scoreSubmitted && (
-            <Button
-              onClick={handleSubmit}
-              className="w-full bg-secondary hover:bg-secondary/80"
-            >
-              Submit to Leaderboard
-            </Button>
-          )}
-          {(hasSubmitted || scoreSubmitted) && (
-            <p className="text-center text-success text-sm">
-              ✓ Score submitted!
-            </p>
-          )}
+        <div className="flex flex-col gap-2 mt-4">
+          <p className="text-center text-success text-sm">
+            ✓ Score submitted to leaderboard!
+          </p>
           <Button
             onClick={onPlayAgain}
-            variant="outline"
-            className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-display"
           >
             Play Again
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

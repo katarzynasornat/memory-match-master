@@ -19,7 +19,7 @@ export const MemoryCard = memo(({ card, onClick, disabled }: MemoryCardProps) =>
     <button
       onClick={handleClick}
       disabled={disabled || card.isFlipped || card.isMatched}
-      className="card-container w-full aspect-square cursor-pointer disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-xl"
+      className="card-container w-full aspect-square cursor-pointer disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-2xl min-h-[80px] md:min-h-[120px]"
       aria-label={card.isFlipped || card.isMatched ? `Card showing ${card.symbol}` : 'Hidden card'}
     >
       <div
@@ -30,7 +30,7 @@ export const MemoryCard = memo(({ card, onClick, disabled }: MemoryCardProps) =>
       >
         {/* Back of card */}
         <div className="card-face card-back">
-          <span className="text-2xl md:text-3xl font-display text-secondary-foreground opacity-50">
+          <span className="text-4xl md:text-5xl font-display text-secondary-foreground opacity-50">
             ?
           </span>
         </div>
@@ -42,7 +42,7 @@ export const MemoryCard = memo(({ card, onClick, disabled }: MemoryCardProps) =>
             card.isMatched && 'card-matched'
           )}
         >
-          <span className="text-3xl md:text-4xl">
+          <span className="text-5xl md:text-6xl">
             {card.symbol}
           </span>
         </div>

@@ -19,7 +19,7 @@ export interface GameState {
 }
 
 const SYMBOLS = ['🚀', '⚡', '🎮', '💎', '🔮', '🌟', '🎯', '🔥'];
-const MAX_FAILURES = 3;
+const MAX_FAILURES = 10;
 const ROUND_BONUS = 100;
 const MATCH_POINTS = 10;
 const STRIKE_BONUS = 50;
