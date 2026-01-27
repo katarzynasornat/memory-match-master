@@ -10,10 +10,10 @@ async def test_get_leaderboard(client):
 @pytest.mark.asyncio
 async def test_submit_score(client):
     email = "winner_refactored@example.com"
-    token = f"mock-token-for-{email}"
     
-    # Signup first to "exist"
-    await client.post("/auth/signup", json={"email": email, "password": "pass"})
+    # Signup first to "exist" and get token
+    signup_resp = await client.post("/auth/signup", json={"email": email, "password": "pass"})
+    token = signup_resp.json()["token"]
     
     # Submit score
     response = await client.post(
@@ -35,8 +35,8 @@ async def test_submit_score_unauthorized(client):
 @pytest.mark.asyncio
 async def test_submit_score_forbidden(client):
     # Try to submit score for another user
-    await client.post("/auth/signup", json={"email": "user1@example.com", "password": "pass"})
-    token = "mock-token-for-user1@example.com"
+    signup_resp = await client.post("/auth/signup", json={"email": "user1@example.com", "password": "pass"})
+    token = signup_resp.json()["token"]
     
     response = await client.post(
         "/leaderboard", 

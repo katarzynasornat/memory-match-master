@@ -6,6 +6,7 @@ from .models import User, LeaderboardEntry
 class MockDatabase:
     def __init__(self):
         self.users: Dict[str, dict] = {}  # email -> {user_obj, password}
+        self.tokens: Dict[str, str] = {}  # token -> email
         self.leaderboard: List[LeaderboardEntry] = [
             LeaderboardEntry(email="pro_player@example.com", score=5000, round=10, date=datetime.now()),
             LeaderboardEntry(email="neon_god@example.com", score=4800, round=9, date=datetime.now()),
@@ -19,7 +20,7 @@ class MockDatabase:
             LeaderboardEntry(email="tester@example.com", score=300, round=1, date=datetime.now()),
         ]
         
-        # Pre-populate some users for testing (password is 'password123' for all)
+        # Pre-populate some users for testing
         self.create_user("player@example.com", "password123")
         self.create_user("test@example.com", "password")
         self.create_user("tester@example.com", "pass")
@@ -29,6 +30,15 @@ class MockDatabase:
         user = User(id=user_id, email=email)
         self.users[email.lower()] = {"user": user, "password": password}
         return user
+
+    def create_session(self, email: str) -> str:
+        # Generate a mock hex token
+        token = f"mt_{uuid.uuid4().hex[:16]}"
+        self.tokens[token] = email.lower()
+        return token
+
+    def get_email_from_token(self, token: str) -> Optional[str]:
+        return self.tokens.get(token)
 
     def get_user_by_email(self, email: str) -> Optional[dict]:
         return self.users.get(email.lower())
