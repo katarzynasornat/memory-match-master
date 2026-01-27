@@ -12,7 +12,7 @@ install:
 	uv sync
 
 run:
-	uv run python -m app.main
+	uv run uvicorn app.main:app --host 0.0.0.0 --port 3000
 
 dev:
 	uv run uvicorn app.main:app --reload --port 3000
