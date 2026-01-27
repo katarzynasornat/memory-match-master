@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, Response
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from datetime import datetime
@@ -24,6 +24,11 @@ async def root():
         "docs": "/api/docs",
         "status": "online",
     }
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)
 
 
 def get_current_user_email(authorization: str = Header(None)):
