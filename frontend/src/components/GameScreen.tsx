@@ -20,24 +20,26 @@ export const GameScreen = ({ email, token, onLogout }: GameScreenProps) => {
   const game = useMemoryGame();
   const { entries, addEntry, isLoading: isLoadingLeaderboard } = useLeaderboard(token);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [hasSubmittedCurrentGame, setHasSubmittedCurrentGame] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const handleSubmitScore = useCallback(async () => {
-    if (!hasSubmittedCurrentGame) {
+    if (submissionStatus === 'idle') {
+      setSubmissionStatus('submitting');
       try {
         await addEntry(email, game.score, game.round);
-        setHasSubmittedCurrentGame(true);
+        setSubmissionStatus('success');
         toast.success('Score submitted to leaderboard!');
       } catch (error) {
+        setSubmissionStatus('error');
         console.error('Failed to submit score:', error);
         toast.error('Failed to submit score. Please try again.');
       }
     }
-  }, [hasSubmittedCurrentGame, addEntry, email, game.score, game.round]);
+  }, [submissionStatus, addEntry, email, game.score, game.round]);
 
   const handlePlayAgain = () => {
     game.resetGame();
-    setHasSubmittedCurrentGame(false);
+    setSubmissionStatus('idle');
   };
 
   return (
@@ -125,6 +127,7 @@ export const GameScreen = ({ email, token, onLogout }: GameScreenProps) => {
         round={game.round}
         onPlayAgain={handlePlayAgain}
         onSubmitScore={handleSubmitScore}
+        submissionStatus={submissionStatus}
       />
 
       <RoundCompleteModal

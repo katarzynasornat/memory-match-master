@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface GameOverModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface GameOverModalProps {
   round: number;
   onPlayAgain: () => void;
   onSubmitScore: () => void;
+  submissionStatus: 'idle' | 'submitting' | 'success' | 'error';
 }
 
 export const GameOverModal = ({
@@ -22,12 +24,13 @@ export const GameOverModal = ({
   round,
   onPlayAgain,
   onSubmitScore,
+  submissionStatus,
 }: GameOverModalProps) => {
   const submissionAttempted = useRef(false);
 
   // Auto-submit score when modal opens
   useEffect(() => {
-    if (isOpen && !submissionAttempted.current) {
+    if (isOpen && !submissionAttempted.current && submissionStatus === 'idle') {
       submissionAttempted.current = true;
       onSubmitScore();
     }
@@ -36,7 +39,7 @@ export const GameOverModal = ({
     if (!isOpen) {
       submissionAttempted.current = false;
     }
-  }, [isOpen, onSubmitScore]);
+  }, [isOpen, onSubmitScore, submissionStatus]);
 
   return (
     <Dialog open={isOpen}>
@@ -54,10 +57,38 @@ export const GameOverModal = ({
             </p>
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-2 mt-4">
-          <p className="text-center text-success text-sm">
-            ✓ Score submitted to leaderboard!
-          </p>
+        <div className="flex flex-col gap-4 mt-4">
+          <div className="flex items-center justify-center gap-2 py-2 border-y border-border/50">
+            {submissionStatus === 'submitting' && (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <span className="text-sm text-muted-foreground">Saving score...</span>
+              </>
+            )}
+            {submissionStatus === 'success' && (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-success" />
+                <span className="text-sm text-success font-medium">Score saved to leaderboard!</span>
+              </>
+            )}
+            {submissionStatus === 'error' && (
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 text-destructive">
+                  <AlertCircle className="w-4 h-4" />
+                  <span className="text-sm font-medium">Failed to save score</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onSubmitScore}
+                  className="h-8 text-xs border-destructive/50 hover:bg-destructive/10"
+                >
+                  Retry Submission
+                </Button>
+              </div>
+            )}
+          </div>
+
           <Button
             onClick={onPlayAgain}
             className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-display"
