@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, UUID
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -11,7 +11,7 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
 
     # Relationship to tokens
     tokens = relationship("SessionToken", back_populates="user", cascade="all, delete-orphan")
@@ -32,4 +32,4 @@ class LeaderboardEntry(Base):
     email = Column(String, index=True, nullable=False)
     score = Column(Integer, nullable=False)
     round = Column(Integer, nullable=False)
-    date = Column(DateTime, default=datetime.utcnow)
+    date = Column(DateTime, default=lambda: datetime.now(UTC))

@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from . import models, security
 from .models import Base, LeaderboardEntry, User
-from datetime import datetime
+from datetime import datetime, UTC
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,16 +32,16 @@ def init_db():
     db = SessionLocal()
     if db.query(LeaderboardEntry).count() == 0:
         mock_entries = [
-            LeaderboardEntry(email="pro_player@example.com", score=48, round=5, date=datetime.now()),
-            LeaderboardEntry(email="neon_god@example.com", score=45, round=5, date=datetime.now()),
-            LeaderboardEntry(email="gamer123@example.com", score=38, round=4, date=datetime.now()),
-            LeaderboardEntry(email="memory_master@example.com", score=32, round=3, date=datetime.now()),
-            LeaderboardEntry(email="arcade_king@example.com", score=28, round=3, date=datetime.now()),
-            LeaderboardEntry(email="quick_fingers@example.com", score=22, round=2, date=datetime.now()),
-            LeaderboardEntry(email="chill_player@example.com", score=18, round=2, date=datetime.now()),
-            LeaderboardEntry(email="newbie@example.com", score=12, round=1, date=datetime.now()),
-            LeaderboardEntry(email="casual@example.com", score=8, round=1, date=datetime.now()),
-            LeaderboardEntry(email="tester@example.com", score=5, round=1, date=datetime.now()),
+            LeaderboardEntry(email="pro_player@example.com", score=48, round=5, date=datetime.now(UTC)),
+            LeaderboardEntry(email="neon_god@example.com", score=45, round=5, date=datetime.now(UTC)),
+            LeaderboardEntry(email="gamer123@example.com", score=38, round=4, date=datetime.now(UTC)),
+            LeaderboardEntry(email="memory_master@example.com", score=32, round=3, date=datetime.now(UTC)),
+            LeaderboardEntry(email="arcade_king@example.com", score=28, round=3, date=datetime.now(UTC)),
+            LeaderboardEntry(email="quick_fingers@example.com", score=22, round=2, date=datetime.now(UTC)),
+            LeaderboardEntry(email="chill_player@example.com", score=18, round=2, date=datetime.now(UTC)),
+            LeaderboardEntry(email="newbie@example.com", score=12, round=1, date=datetime.now(UTC)),
+            LeaderboardEntry(email="casual@example.com", score=8, round=1, date=datetime.now(UTC)),
+            LeaderboardEntry(email="tester@example.com", score=5, round=1, date=datetime.now(UTC)),
         ]
         db.add_all(mock_entries)
         db.commit()

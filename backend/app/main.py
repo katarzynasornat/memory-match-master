@@ -1,6 +1,6 @@
 import uuid
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends, Header, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -118,7 +118,7 @@ async def submit_score(
         email=entry.email.strip().lower(),
         score=entry.score,
         round=entry.round,
-        date=entry.date or datetime.now(),
+        date=entry.date or datetime.now(UTC),
     )
     db.add(leaderboard_entry)
     db.commit()

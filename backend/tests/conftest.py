@@ -27,7 +27,7 @@ def override_get_db():
 
 app.dependency_overrides[get_db] = override_get_db
 
-from datetime import datetime
+from datetime import datetime, UTC
 from app.models import LeaderboardEntry
 
 @pytest.fixture(scope="function", autouse=True)
@@ -36,9 +36,9 @@ def setup_db():
     # Pre-populate leaderboard for tests
     db = TestingSessionLocal()
     mock_entries = [
-        LeaderboardEntry(email="pro_player@example.com", score=48, round=5, date=datetime.now()),
-        LeaderboardEntry(email="neon_god@example.com", score=45, round=5, date=datetime.now()),
-        LeaderboardEntry(email="gamer123@example.com", score=38, round=4, date=datetime.now()),
+        LeaderboardEntry(email="pro_player@example.com", score=48, round=5, date=datetime.now(UTC)),
+        LeaderboardEntry(email="neon_god@example.com", score=45, round=5, date=datetime.now(UTC)),
+        LeaderboardEntry(email="gamer123@example.com", score=38, round=4, date=datetime.now(UTC)),
     ]
     db.add_all(mock_entries)
     db.commit()

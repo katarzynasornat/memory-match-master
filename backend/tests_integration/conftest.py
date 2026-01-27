@@ -12,7 +12,7 @@ from app.main import app
 from app.database import get_db
 from app.models import Base, LeaderboardEntry, User
 from app import security
-from datetime import datetime
+from datetime import datetime, UTC
 
 # Use file-based SQLite for integration tests to simulate real database behavior
 # Use /tmp directory to ensure we have write permissions
@@ -61,19 +61,19 @@ def setup_db():
                 email="pro_player@example.com",
                 score=48,
                 round=5,
-                date=datetime.now()
+                date=datetime.now(UTC)
             ),
             LeaderboardEntry(
                 email="neon_god@example.com",
                 score=45,
                 round=5,
-                date=datetime.now()
+                date=datetime.now(UTC)
             ),
             LeaderboardEntry(
                 email="gamer123@example.com",
                 score=38,
                 round=4,
-                date=datetime.now()
+                date=datetime.now(UTC)
             ),
         ]
         db.add_all(mock_entries)
