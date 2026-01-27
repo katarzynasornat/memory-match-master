@@ -34,16 +34,16 @@ export const MemoryCard = memo(({ card, onClick, disabled }: MemoryCardProps) =>
             ?
           </span>
         </div>
-        
+
         {/* Front of card */}
         <div
           className={cn(
             'card-face card-front',
-            card.isMatched && 'card-matched'
+            card.isMatched && (card.symbol === '⭐' ? 'card-joker' : 'card-matched')
           )}
         >
           <span className="text-5xl md:text-6xl">
-            {card.symbol}
+            {card.symbol === '⭐' ? '' : card.symbol}
           </span>
         </div>
       </div>
