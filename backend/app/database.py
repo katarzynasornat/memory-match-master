@@ -10,49 +10,40 @@ class MockDatabase:
         self.tokens: Dict[str, str] = {}  # token -> email
         self.leaderboard: List[LeaderboardEntry] = [
             LeaderboardEntry(
-                email="pro_player@example.com",
-                score=5000,
-                round=10,
-                date=datetime.now(),
+                email="pro_player@example.com", score=48, round=5, date=datetime.now()
             ),
             LeaderboardEntry(
-                email="neon_god@example.com", score=4800, round=9, date=datetime.now()
+                email="neon_god@example.com", score=45, round=5, date=datetime.now()
             ),
             LeaderboardEntry(
-                email="gamer123@example.com", score=3500, round=7, date=datetime.now()
+                email="gamer123@example.com", score=38, round=4, date=datetime.now()
             ),
             LeaderboardEntry(
                 email="memory_master@example.com",
-                score=2800,
-                round=6,
-                date=datetime.now(),
-            ),
-            LeaderboardEntry(
-                email="arcade_king@example.com",
-                score=2500,
-                round=5,
-                date=datetime.now(),
-            ),
-            LeaderboardEntry(
-                email="quick_fingers@example.com",
-                score=2100,
-                round=4,
-                date=datetime.now(),
-            ),
-            LeaderboardEntry(
-                email="chill_player@example.com",
-                score=1500,
+                score=32,
                 round=3,
                 date=datetime.now(),
             ),
             LeaderboardEntry(
-                email="newbie@example.com", score=800, round=2, date=datetime.now()
+                email="arcade_king@example.com", score=28, round=3, date=datetime.now()
             ),
             LeaderboardEntry(
-                email="casual@example.com", score=500, round=1, date=datetime.now()
+                email="quick_fingers@example.com",
+                score=22,
+                round=2,
+                date=datetime.now(),
             ),
             LeaderboardEntry(
-                email="tester@example.com", score=300, round=1, date=datetime.now()
+                email="chill_player@example.com", score=18, round=2, date=datetime.now()
+            ),
+            LeaderboardEntry(
+                email="newbie@example.com", score=12, round=1, date=datetime.now()
+            ),
+            LeaderboardEntry(
+                email="casual@example.com", score=8, round=1, date=datetime.now()
+            ),
+            LeaderboardEntry(
+                email="tester@example.com", score=5, round=1, date=datetime.now()
             ),
         ]
 
