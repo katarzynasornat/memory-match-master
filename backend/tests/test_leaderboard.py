@@ -52,3 +52,23 @@ async def test_submit_score_forbidden(client):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_submit_score_case_insensitive(client):
+    email = "CaseSensitive@Example.Com"
+    
+    # Signup
+    signup_resp = await client.post(
+        "/auth/signup", json={"email": email, "password": "pass"}
+    )
+    token = signup_resp.json()["token"]
+    
+    # Submit score with different casing
+    response = await client.post(
+        "/leaderboard",
+        json={"email": email.lower(), "score": 50, "round": 2},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 201
+    assert response.json()["message"] == "Score submitted successfully"
