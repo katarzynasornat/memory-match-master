@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from datetime import datetime
-import models
-from database import db
+from . import models
+from .database import db
 
 app = FastAPI(title="Memory Match API")
 

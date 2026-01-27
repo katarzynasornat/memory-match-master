@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from typing import List, Dict, Optional
-from models import User, LeaderboardEntry
+from .models import User, LeaderboardEntry
 
 class MockDatabase:
     def __init__(self):

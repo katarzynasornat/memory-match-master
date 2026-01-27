@@ -43,7 +43,7 @@ Once `uv` is installed, you can use it to manage the project:
 uv sync
 
 # Run the application
-uv run main.py
+uv run python -m app.main
 
 # Run tests
 uv run pytest
