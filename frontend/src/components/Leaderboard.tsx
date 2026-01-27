@@ -36,10 +36,10 @@ export const Leaderboard = ({ entries, currentUser, isLoading }: LeaderboardProp
             entry.email === currentUser && 'border border-primary/30'
           )}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <div
               className={cn(
-                'rank-badge',
+                'rank-badge flex-shrink-0',
                 index === 0 && 'rank-1',
                 index === 1 && 'rank-2',
                 index === 2 && 'rank-3',
@@ -48,9 +48,9 @@ export const Leaderboard = ({ entries, currentUser, isLoading }: LeaderboardProp
             >
               {index + 1}
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className={cn(
-                'font-medium',
+                'font-medium truncate',
                 entry.email === currentUser && 'text-primary'
               )}>
                 {entry.email}
@@ -60,7 +60,7 @@ export const Leaderboard = ({ entries, currentUser, isLoading }: LeaderboardProp
               </p>
             </div>
           </div>
-          <div className="text-right">
+          <div className="text-right pl-4">
             <p className="font-display text-lg neon-text">{entry.score}</p>
           </div>
         </div>

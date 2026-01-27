@@ -108,7 +108,7 @@ export const GameScreen = ({ email, token, onLogout }: GameScreenProps) => {
 
         {/* Leaderboard Sidebar (Desktop) or Toggle (Mobile) */}
         {showLeaderboard && (
-          <aside className="lg:w-80 neon-box bg-card/50 p-4 rounded-lg">
+          <aside className="lg:w-96 neon-box bg-card/50 p-4 rounded-lg overflow-y-auto max-h-[calc(100vh-8rem)]">
             <h2 className="font-display text-xl mb-4 flex items-center gap-2">
               <Trophy className="w-5 h-5 text-warning" />
               Leaderboard
