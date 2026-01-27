@@ -49,13 +49,19 @@ Once `uv` is installed, you can use it to manage the project:
    uv run python -m app.main
    ```
 
+3. **Development Mode (with auto-reload)**:
+   Useful for development as it restarts the server when code changes.
+   ```sh
+   uv run uvicorn app.main:app --reload --port 3000
+   ```
+
 The server will start at **`http://localhost:3000`**.
 
 ### API Exploration
 
 Once the server is running, you can access:
-- **Interactive Documentation**: [http://localhost:3000/docs](http://localhost:3000/docs) (Swagger UI)
-- **Alternative Documentation**: [http://localhost:3000/redoc](http://localhost:3000/redoc) (ReDoc)
+- **Interactive Documentation**: [http://localhost:3000/api/docs](http://localhost:3000/api/docs) (Swagger UI)
+- **Alternative Documentation**: [http://localhost:3000/api/redoc](http://localhost:3000/api/redoc) (ReDoc)
 
 ### Running Tests
 

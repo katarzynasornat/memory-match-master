@@ -5,7 +5,11 @@ from datetime import datetime
 from . import models
 from .database import db
 
-app = FastAPI(title="Memory Match API")
+app = FastAPI(
+    title="Memory Match API",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+)
 
 # Enable CORS for frontend integration
 app.add_middleware(
@@ -20,7 +24,7 @@ app.add_middleware(
 async def root():
     return {
         "message": "Welcome to the Memory Match API",
-        "docs": "/docs",
+        "docs": "/api/docs",
         "status": "online"
     }
 
