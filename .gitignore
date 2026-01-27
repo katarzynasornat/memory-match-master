@@ -1,0 +1,28 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific
+node_modules/
+.venv/
+venv/
+__pycache__/
+dist/
+build/
+.next/
+.server/
+.client/
+out/
+.vercel
+.turbo
+.pytest_cache/
+.eslintcache
+.stylelintcache
+*.log
+.uv

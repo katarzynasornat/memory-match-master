@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+.uv
+.pytest_cache/
+.eslintcache
 
 # Editor directories and files
 .vscode/*
