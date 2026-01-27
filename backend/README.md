@@ -46,5 +46,12 @@ uv sync
 uv run python -m app.main
 
 # Run tests
-uv run pytest
+uv run pytest tests/
 ```
+
+## Testing Structure
+
+The test suite is located in the `tests/` directory and is split by functionality:
+- `tests/test_auth.py`: Authentication endpoints (signup, login).
+- `tests/test_leaderboard.py`: Leaderboard endpoints (GET, POST).
+- `tests/conftest.py`: Shared fixtures (HTTP client).
