@@ -1,7 +1,8 @@
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from .models import Base, LeaderboardEntry
+from . import models, security
+from .models import Base, LeaderboardEntry, User
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -44,4 +45,14 @@ def init_db():
         ]
         db.add_all(mock_entries)
         db.commit()
+
+    # Pre-populate test user if none exist
+    if db.query(User).count() == 0:
+        test_user = User(
+            email="tester@example.com",
+            hashed_password=security.hash_password("password123")
+        )
+        db.add(test_user)
+        db.commit()
+
     db.close()

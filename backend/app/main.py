@@ -4,24 +4,12 @@ from typing import List
 from fastapi import FastAPI, HTTPException, Depends, Header, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-import bcrypt
-from . import models, schemas, database
+from . import models, schemas, database, security
 
 app = FastAPI(title="Memory Match API", docs_url="/api/docs", redoc_url="/api/redoc")
 
 # Initialize database
 database.init_db()
-
-def hash_password(password: str) -> str:
-    pwd_bytes = password.encode('utf-8')
-    salt = bcrypt.gensalt()
-    hashed = bcrypt.hashpw(pwd_bytes, salt)
-    return hashed.decode('utf-8')
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    password_byte_enc = plain_password.encode('utf-8')
-    hashed_password_byte_enc = hashed_password.encode('utf-8')
-    return bcrypt.checkpw(password_byte_enc, hashed_password_byte_enc)
 
 # Enable CORS for frontend integration
 app.add_middleware(
@@ -72,7 +60,7 @@ async def signup(user_data: schemas.UserCreate, db: Session = Depends(database.g
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    hashed_pw = hash_password(user_data.password)
+    hashed_pw = security.hash_password(user_data.password)
     new_user = models.User(
         email=user_data.email.lower(),
         hashed_password=hashed_pw,
@@ -93,7 +81,7 @@ async def signup(user_data: schemas.UserCreate, db: Session = Depends(database.g
 @app.post("/auth/login", response_model=schemas.AuthResponse)
 async def login(user_data: schemas.UserCreate, db: Session = Depends(database.get_db)):
     user = db.query(models.User).filter(models.User.email == user_data.email.lower()).first()
-    if not user or not verify_password(user_data.password, user.hashed_password):
+    if not user or not security.verify_password(user_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     # Create session token
