@@ -24,3 +24,7 @@ dependencies = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_test_loop_scope = "function"
+testpaths = ["tests", "tests_integration"]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]

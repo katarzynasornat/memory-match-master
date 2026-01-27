@@ -1,4 +1,5 @@
 import uuid
+import os
 from datetime import datetime
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends, Header, Response
@@ -8,8 +9,9 @@ from . import models, schemas, database, security
 
 app = FastAPI(title="Memory Match API", docs_url="/api/docs", redoc_url="/api/redoc")
 
-# Initialize database
-database.init_db()
+# Initialize database (skip during testing)
+if not os.getenv("TESTING"):
+    database.init_db()
 
 # Enable CORS for frontend integration
 app.add_middleware(
