@@ -1,14 +1,23 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useAuth } from '@/hooks/useAuth';
+import { LoginForm } from '@/components/LoginForm';
+import { GameScreen } from '@/components/GameScreen';
 
 const Index = () => {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+  const { user, isLoading, login, logout } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!user) {
+    return <LoginForm onLogin={login} />;
+  }
+
+  return <GameScreen username={user.username} onLogout={logout} />;
 };
 
 export default Index;
