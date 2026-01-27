@@ -1,10 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 
 // Mock fetch globally
 global.fetch = vi.fn();
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+    },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client= { queryClient } > { children } </QueryClientProvider>
+  );
+};
 
 describe('useAuth', () => {
   beforeEach(() => {
@@ -111,7 +126,9 @@ describe('useLeaderboard', () => {
       json: async () => mockEntries,
     });
 
-    const { result } = renderHook(() => useLeaderboard());
+    const { result } = renderHook(() => useLeaderboard(), {
+      wrapper: createWrapper(),
+    });
 
     await vi.waitFor(() => {
       expect(result.current.entries).toEqual(mockEntries);
@@ -123,9 +140,11 @@ describe('useLeaderboard', () => {
     (fetch as any)
       .mockResolvedValueOnce({ ok: true, json: async () => [] }) // initial fetch
       .mockResolvedValueOnce({ ok: true, json: async () => ({}) }) // post result
-      .mockResolvedValueOnce({ ok: true, json: async () => mockEntries }); // second fetch
+      .mockResolvedValueOnce({ ok: true, json: async () => mockEntries }); // second fetch (triggered by invalidate)
 
-    const { result } = renderHook(() => useLeaderboard('mock-token'));
+    const { result } = renderHook(() => useLeaderboard('mock-token'), {
+      wrapper: createWrapper(),
+    });
 
     await act(async () => {
       await result.current.addEntry('player1@example.com', 100, 2);
@@ -136,6 +155,7 @@ describe('useLeaderboard', () => {
       expect.objectContaining({ method: 'POST' })
     );
 
+    // React Query handles the refetching on invalidation
     await vi.waitFor(() => {
       expect(result.current.entries).toEqual(mockEntries);
     });
@@ -144,10 +164,16 @@ describe('useLeaderboard', () => {
   it('should not add entry if no token provided', async () => {
     (fetch as any).mockResolvedValue({ ok: true, json: async () => [] });
 
-    const { result } = renderHook(() => useLeaderboard(null));
+    const { result } = renderHook(() => useLeaderboard(null), {
+      wrapper: createWrapper(),
+    });
 
     await act(async () => {
-      await result.current.addEntry('player1@example.com', 100, 2);
+      try {
+        await result.current.addEntry('player1@example.com', 100, 2);
+      } catch (e) {
+        // Expected if it tries to call API without token
+      }
     });
 
     // Only the initial GET should have been called

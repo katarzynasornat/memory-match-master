@@ -1,48 +1,32 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-
-export interface LeaderboardEntry {
-  email: string;
-  score: number;
-  round: number;
-  date: string;
-}
+import type { LeaderboardEntry, LeaderboardEntryCreate } from '@/types/api';
 
 export const useLeaderboard = (token?: string | null) => {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const fetchLeaderboard = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await api.get('/leaderboard');
-      setEntries(data);
-    } catch (error) {
-      console.error('Failed to fetch leaderboard:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const { data: entries = [], isLoading, refetch } = useQuery<LeaderboardEntry[]>({
+    queryKey: ['leaderboard'],
+    queryFn: () => api.get('/leaderboard'),
+  });
 
-  useEffect(() => {
-    fetchLeaderboard();
-  }, [fetchLeaderboard]);
-
-  const addEntry = useCallback(async (email: string, score: number, round: number) => {
-    if (!token) return;
-    try {
-      await api.post('/leaderboard', { email, score, round }, token);
-      await fetchLeaderboard();
-    } catch (error) {
-      console.error('Failed to submit score:', error);
-      throw error;
-    }
-  }, [token, fetchLeaderboard]);
+  const addEntryMutation = useMutation({
+    mutationFn: (entry: LeaderboardEntryCreate) =>
+      api.post('/leaderboard', entry, token || undefined),
+    onSuccess: () => {
+      // Invalidate and refetch leaderboard after a successful submission
+      queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
+    },
+  });
 
   return {
     entries,
     isLoading,
-    addEntry,
-    refresh: fetchLeaderboard,
+    addEntry: (email: string, score: number, round: number) => {
+      if (!token) return Promise.reject(new Error('Authentication required'));
+      return addEntryMutation.mutateAsync({ email, score, round });
+    },
+    refresh: refetch,
+    isSubmitting: addEntryMutation.isPending,
   };
 };

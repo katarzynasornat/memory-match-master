@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { LeaderboardEntry } from '@/hooks/useLeaderboard';
+import type { LeaderboardEntry } from '@/types/api';
 import { Trophy } from 'lucide-react';
 
 interface LeaderboardProps {

@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
-
-interface User {
-  email: string;
-}
+import type { User, AuthResponse } from '@/types/api';
 
 interface AuthState {
   user: User | null;
