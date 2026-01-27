@@ -39,13 +39,15 @@ powershell -c "irel ast.sh/uv/install.ps1 | iex"
 Once `uv` is installed, you can use the provided `Makefile` for convenience:
 
 ```sh
-make install    # Install dependencies
-make dev        # Start development server (hot-reload)
-make run        # Start production server
-make test       # Run tests
-make lint       # Run lint checks
-make format     # Format code
-make migrate    # Run database migrations
+make install           # Install dependencies
+make dev               # Start development server (hot-reload)
+make run               # Start production server
+make test              # Run unit tests
+make test-integration  # Run integration tests
+make test-all          # Run all tests (unit + integration)
+make lint              # Run lint checks
+make format            # Format code
+make migrate           # Run database migrations
 make revision MSG="description" # Create a new migration
 ```
 
@@ -89,13 +91,45 @@ Once the server is running, you can access:
 
 ### Running Tests
 
+The project includes both **unit tests** and **integration tests**:
+
 ```sh
+# Run all tests (unit + integration)
+make test-all
+
+# Run only unit tests
+make test
+
+# Run only integration tests
+make test-integration
+```
+
+Or using `uv` directly:
+```sh
+# All tests
+uv run pytest tests/ tests_integration/
+
+# Unit tests only
 uv run pytest tests/
+
+# Integration tests only
+uv run pytest tests_integration/
 ```
 
 ## Testing Structure
 
-The test suite is located in the `tests/` directory and is split by functionality:
-- `tests/test_auth.py`: Authentication endpoints (signup, login).
-- `tests/test_leaderboard.py`: Leaderboard endpoints (GET, POST).
-- `tests/conftest.py`: Shared fixtures (HTTP client).
+### Unit Tests (`tests/`)
+Fast, in-memory tests for individual components:
+- `tests/test_auth.py`: Authentication endpoints (signup, login)
+- `tests/test_leaderboard.py`: Leaderboard endpoints (GET, POST)
+- `tests/conftest.py`: Shared fixtures (HTTP client, in-memory database)
+
+### Integration Tests (`tests_integration/`)
+End-to-end tests using file-based SQLite to verify complete workflows:
+- `tests_integration/test_auth_integration.py`: Full authentication flow (9 tests)
+- `tests_integration/test_leaderboard_integration.py`: Leaderboard persistence and ordering (10 tests)
+- `tests_integration/test_database_integration.py`: Database operations and relationships (9 tests)
+- `tests_integration/conftest.py`: Test fixtures with file-based database setup
+- `tests_integration/README.md`: Detailed integration test documentation
+
+**Total: 38 tests** (10 unit + 28 integration)
