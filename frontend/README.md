@@ -36,6 +36,24 @@ npm i
 npm run dev
 ```
 
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for unit and integration testing.
+
+- **Run tests once and exit**:
+  ```sh
+  npm test
+  ```
+  *(This is an alias for `npm run test` which executes `vitest run`)*
+
+- **Run tests in watch mode** (keeps running and auto-runs on changes):
+  ```sh
+  npm run test:watch
+  ```
+
+Test files are located in `src/test/`, for example: [example.test.ts](file:///workspaces/memory-match-master/frontend/src/test/example.test.ts)
+
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).

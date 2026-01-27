@@ -10,78 +10,78 @@ describe('useAuth', () => {
 
   it('should start with no user after loading', async () => {
     const { result } = renderHook(() => useAuth());
-    
+
     // Wait for loading to complete
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    
+
     expect(result.current.user).toBe(null);
     expect(result.current.isAuthenticated).toBe(false);
   });
 
   it('should login successfully', async () => {
     const { result } = renderHook(() => useAuth());
-    
+
     // Wait for initial load
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    
+
     act(() => {
-      result.current.login('TestPlayer');
+      result.current.login('test@example.com');
     });
-    
-    expect(result.current.user?.username).toBe('TestPlayer');
+
+    expect(result.current.user?.email).toBe('test@example.com');
     expect(result.current.isAuthenticated).toBe(true);
   });
 
   it('should persist user to localStorage', async () => {
     const { result } = renderHook(() => useAuth());
-    
+
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    
+
     act(() => {
-      result.current.login('TestPlayer');
+      result.current.login('test@example.com');
     });
-    
+
     const stored = localStorage.getItem('memory_game_user');
-    expect(stored).toBe(JSON.stringify({ username: 'TestPlayer' }));
+    expect(stored).toBe(JSON.stringify({ email: 'test@example.com' }));
   });
 
   it('should logout successfully', async () => {
     const { result } = renderHook(() => useAuth());
-    
+
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    
+
     act(() => {
-      result.current.login('TestPlayer');
+      result.current.login('test@example.com');
     });
-    
+
     act(() => {
       result.current.logout();
     });
-    
+
     expect(result.current.user).toBe(null);
     expect(result.current.isAuthenticated).toBe(false);
   });
 
-  it('should trim whitespace from username', async () => {
+  it('should trim whitespace from email', async () => {
     const { result } = renderHook(() => useAuth());
-    
+
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    
+
     act(() => {
-      result.current.login('  Spaces  ');
+      result.current.login('  test@example.com  ');
     });
-    
-    expect(result.current.user?.username).toBe('Spaces');
+
+    expect(result.current.user?.email).toBe('test@example.com');
   });
 });
 
@@ -97,40 +97,40 @@ describe('useLeaderboard', () => {
 
   it('should add entry to leaderboard', () => {
     const { result } = renderHook(() => useLeaderboard());
-    
+
     act(() => {
-      result.current.addEntry('Player1', 100, 2);
+      result.current.addEntry('player1@example.com', 100, 2);
     });
-    
+
     expect(result.current.entries).toHaveLength(1);
-    expect(result.current.entries[0].username).toBe('Player1');
+    expect(result.current.entries[0].email).toBe('player1@example.com');
     expect(result.current.entries[0].score).toBe(100);
     expect(result.current.entries[0].round).toBe(2);
   });
 
   it('should sort entries by score descending', () => {
     const { result } = renderHook(() => useLeaderboard());
-    
+
     act(() => {
-      result.current.addEntry('Player1', 100, 1);
-      result.current.addEntry('Player2', 300, 3);
-      result.current.addEntry('Player3', 200, 2);
+      result.current.addEntry('player1@example.com', 100, 1);
+      result.current.addEntry('player2@example.com', 300, 3);
+      result.current.addEntry('player3@example.com', 200, 2);
     });
-    
-    expect(result.current.entries[0].username).toBe('Player2');
-    expect(result.current.entries[1].username).toBe('Player3');
-    expect(result.current.entries[2].username).toBe('Player1');
+
+    expect(result.current.entries[0].email).toBe('player2@example.com');
+    expect(result.current.entries[1].email).toBe('player3@example.com');
+    expect(result.current.entries[2].email).toBe('player1@example.com');
   });
 
   it('should limit to 10 entries', () => {
     const { result } = renderHook(() => useLeaderboard());
-    
+
     act(() => {
       for (let i = 0; i < 15; i++) {
-        result.current.addEntry(`Player${i}`, i * 10, 1);
+        result.current.addEntry(`player${i}@example.com`, i * 10, 1);
       }
     });
-    
+
     expect(result.current.entries).toHaveLength(10);
     // Highest scores should be kept
     expect(result.current.entries[0].score).toBe(140);
@@ -138,26 +138,26 @@ describe('useLeaderboard', () => {
 
   it('should persist entries to localStorage', () => {
     const { result } = renderHook(() => useLeaderboard());
-    
+
     act(() => {
-      result.current.addEntry('Player1', 100, 1);
+      result.current.addEntry('player1@example.com', 100, 1);
     });
-    
+
     const stored = localStorage.getItem('memory_game_leaderboard');
     expect(stored).toBeTruthy();
-    
+
     const parsed = JSON.parse(stored!);
     expect(parsed).toHaveLength(1);
   });
 
   it('should clear leaderboard', () => {
     const { result } = renderHook(() => useLeaderboard());
-    
+
     act(() => {
-      result.current.addEntry('Player1', 100, 1);
+      result.current.addEntry('player1@example.com', 100, 1);
       result.current.clearLeaderboard();
     });
-    
+
     expect(result.current.entries).toHaveLength(0);
   });
 });

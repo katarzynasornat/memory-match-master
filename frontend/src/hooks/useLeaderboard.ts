@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export interface LeaderboardEntry {
-  username: string;
+  email: string;
   score: number;
   round: number;
   date: string;
@@ -24,9 +24,9 @@ export const useLeaderboard = () => {
     }
   }, []);
 
-  const addEntry = useCallback((username: string, score: number, round: number) => {
+  const addEntry = useCallback((email: string, score: number, round: number) => {
     const newEntry: LeaderboardEntry = {
-      username,
+      email,
       score,
       round,
       date: new Date().toISOString(),
@@ -36,7 +36,7 @@ export const useLeaderboard = () => {
       const updated = [...prev, newEntry]
         .sort((a, b) => b.score - a.score)
         .slice(0, MAX_ENTRIES);
-      
+
       localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updated));
       return updated;
     });

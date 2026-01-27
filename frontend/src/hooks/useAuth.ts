@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 interface User {
-  username: string;
+  email: string;
 }
 
 const AUTH_KEY = 'memory_game_user';
@@ -22,8 +22,8 @@ export const useAuth = () => {
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((username: string) => {
-    const newUser = { username: username.trim() };
+  const login = useCallback((email: string) => {
+    const newUser = { email: email.trim() };
     localStorage.setItem(AUTH_KEY, JSON.stringify(newUser));
     setUser(newUser);
   }, []);

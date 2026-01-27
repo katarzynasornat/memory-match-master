@@ -21,10 +21,10 @@ export const Leaderboard = ({ entries, currentUser }: LeaderboardProps) => {
     <div className="space-y-2">
       {entries.map((entry, index) => (
         <div
-          key={`${entry.username}-${entry.date}`}
+          key={`${entry.email}-${entry.date}`}
           className={cn(
             'leaderboard-row',
-            entry.username === currentUser && 'border border-primary/30'
+            entry.email === currentUser && 'border border-primary/30'
           )}
         >
           <div className="flex items-center gap-3">
@@ -42,9 +42,9 @@ export const Leaderboard = ({ entries, currentUser }: LeaderboardProps) => {
             <div>
               <p className={cn(
                 'font-medium',
-                entry.username === currentUser && 'text-primary'
+                entry.email === currentUser && 'text-primary'
               )}>
-                {entry.username}
+                {entry.email}
               </p>
               <p className="text-xs text-muted-foreground">
                 Round {entry.round}

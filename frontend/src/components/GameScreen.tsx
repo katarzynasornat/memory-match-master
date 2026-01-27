@@ -10,11 +10,11 @@ import { Button } from '@/components/ui/button';
 import { LogOut, Trophy, RotateCcw } from 'lucide-react';
 
 interface GameScreenProps {
-  username: string;
+  email: string;
   onLogout: () => void;
 }
 
-export const GameScreen = ({ username, onLogout }: GameScreenProps) => {
+export const GameScreen = ({ email, onLogout }: GameScreenProps) => {
   const game = useMemoryGame();
   const { entries, addEntry } = useLeaderboard();
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -22,10 +22,10 @@ export const GameScreen = ({ username, onLogout }: GameScreenProps) => {
 
   const handleSubmitScore = useCallback(() => {
     if (!hasSubmittedCurrentGame) {
-      addEntry(username, game.score, game.round);
+      addEntry(email, game.score, game.round);
       setHasSubmittedCurrentGame(true);
     }
-  }, [hasSubmittedCurrentGame, addEntry, username, game.score, game.round]);
+  }, [hasSubmittedCurrentGame, addEntry, email, game.score, game.round]);
 
   const handlePlayAgain = () => {
     game.resetGame();
@@ -39,7 +39,7 @@ export const GameScreen = ({ username, onLogout }: GameScreenProps) => {
         <div>
           <h1 className="game-title text-2xl md:text-3xl">Memory</h1>
           <p className="text-sm text-muted-foreground">
-            Playing as <span className="text-primary">{username}</span>
+            Playing as <span className="text-primary">{email}</span>
           </p>
         </div>
         <div className="flex gap-2">
@@ -105,7 +105,7 @@ export const GameScreen = ({ username, onLogout }: GameScreenProps) => {
               <Trophy className="w-5 h-5 text-warning" />
               Leaderboard
             </h2>
-            <Leaderboard entries={entries} currentUser={username} />
+            <Leaderboard entries={entries} currentUser={email} />
           </aside>
         )}
       </main>

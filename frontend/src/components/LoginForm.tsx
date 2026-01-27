@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Gamepad2, Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
-  onLogin: (username: string) => void;
+  onLogin: (email: string) => void;
 }
 
 const USERS_KEY = 'memory_game_users';
@@ -19,23 +19,23 @@ const getStoredUsers = (): Record<string, string> => {
   }
 };
 
-const saveUser = (username: string, password: string) => {
+const saveUser = (email: string, password: string) => {
   const users = getStoredUsers();
-  users[username.toLowerCase()] = password;
+  users[email.toLowerCase()] = password;
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 };
 
 export const LoginForm = ({ onLogin }: LoginFormProps) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const validateUsername = (name: string): string | null => {
-    if (name.length < 2) return 'Username must be at least 2 characters';
-    if (name.length > 15) return 'Username must be 15 characters or less';
+  const validateEmail = (email: string): string | null => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return 'Please enter a valid email address';
     return null;
   };
 
@@ -46,12 +46,12 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
     const users = getStoredUsers();
 
-    const usernameError = validateUsername(trimmedUsername);
-    if (usernameError) {
-      setError(usernameError);
+    const emailError = validateEmail(trimmedEmail);
+    if (emailError) {
+      setError(emailError);
       return;
     }
 
@@ -63,19 +63,19 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
 
     if (isSignUp) {
       // Sign Up flow
-      if (users[trimmedUsername.toLowerCase()]) {
-        setError('Username already exists');
+      if (users[trimmedEmail.toLowerCase()]) {
+        setError('User with this email already exists');
         return;
       }
       if (password !== confirmPassword) {
         setError('Passwords do not match');
         return;
       }
-      saveUser(trimmedUsername, password);
-      onLogin(trimmedUsername);
+      saveUser(trimmedEmail, password);
+      onLogin(trimmedEmail);
     } else {
       // Login flow
-      const storedPassword = users[trimmedUsername.toLowerCase()];
+      const storedPassword = users[trimmedEmail.toLowerCase()];
       if (!storedPassword) {
         setError('User not found. Please sign up first.');
         return;
@@ -84,7 +84,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
         setError('Incorrect password');
         return;
       }
-      onLogin(trimmedUsername);
+      onLogin(trimmedEmail);
     }
   };
 
@@ -112,20 +112,20 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="neon-box bg-card/50 p-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="username" className="text-foreground">
-              Username
+            <Label htmlFor="email" className="text-foreground">
+              Email Address
             </Label>
             <Input
-              id="username"
-              type="text"
-              placeholder="Player1"
-              value={username}
+              id="email"
+              type="email"
+              placeholder="player@example.com"
+              value={email}
               onChange={(e) => {
-                setUsername(e.target.value);
+                setEmail(e.target.value);
                 setError('');
               }}
               className="bg-background border-border focus:border-primary"
-              autoComplete="username"
+              autoComplete="email"
               autoFocus
             />
           </div>
