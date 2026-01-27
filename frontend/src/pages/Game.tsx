@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
 const Game = () => {
-    const { user, isLoading, logout } = useAuth();
+    const { user, token, isLoading, logout } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,6 +24,7 @@ const Game = () => {
     return (
         <GameScreen
             email={user.email}
+            token={token}
             onLogout={() => {
                 logout();
                 navigate('/');

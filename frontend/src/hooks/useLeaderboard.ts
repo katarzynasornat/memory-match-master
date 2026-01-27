@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
 
 export interface LeaderboardEntry {
   email: string;
@@ -7,49 +8,41 @@ export interface LeaderboardEntry {
   date: string;
 }
 
-const LEADERBOARD_KEY = 'memory_game_leaderboard';
-const MAX_ENTRIES = 10;
-
-export const useLeaderboard = () => {
+export const useLeaderboard = (token?: string | null) => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(LEADERBOARD_KEY);
-    if (stored) {
-      try {
-        setEntries(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem(LEADERBOARD_KEY);
-      }
+  const fetchLeaderboard = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await api.get('/leaderboard');
+      setEntries(data);
+    } catch (error) {
+      console.error('Failed to fetch leaderboard:', error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  const addEntry = useCallback((email: string, score: number, round: number) => {
-    const newEntry: LeaderboardEntry = {
-      email,
-      score,
-      round,
-      date: new Date().toISOString(),
-    };
+  useEffect(() => {
+    fetchLeaderboard();
+  }, [fetchLeaderboard]);
 
-    setEntries(prev => {
-      const updated = [...prev, newEntry]
-        .sort((a, b) => b.score - a.score)
-        .slice(0, MAX_ENTRIES);
-
-      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  const clearLeaderboard = useCallback(() => {
-    localStorage.removeItem(LEADERBOARD_KEY);
-    setEntries([]);
-  }, []);
+  const addEntry = useCallback(async (email: string, score: number, round: number) => {
+    if (!token) return;
+    try {
+      await api.post('/leaderboard', { email, score, round }, token);
+      await fetchLeaderboard();
+    } catch (error) {
+      console.error('Failed to submit score:', error);
+      throw error;
+    }
+  }, [token, fetchLeaderboard]);
 
   return {
     entries,
+    isLoading,
     addEntry,
-    clearLeaderboard,
+    refresh: fetchLeaderboard,
   };
 };

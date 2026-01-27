@@ -1,20 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
+import { api } from '@/lib/api';
 
 interface User {
   email: string;
 }
 
-const AUTH_KEY = 'memory_game_user';
+interface AuthState {
+  user: User | null;
+  token: string | null;
+}
+
+const AUTH_KEY = 'memory_game_auth';
 
 export const useAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [authState, setAuthState] = useState<AuthState>({ user: null, token: null });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem(AUTH_KEY);
     if (stored) {
       try {
-        setUser(JSON.parse(stored));
+        setAuthState(JSON.parse(stored));
       } catch {
         localStorage.removeItem(AUTH_KEY);
       }
@@ -22,22 +28,34 @@ export const useAuth = () => {
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((email: string) => {
-    const newUser = { email: email.trim() };
-    localStorage.setItem(AUTH_KEY, JSON.stringify(newUser));
-    setUser(newUser);
+  const login = useCallback(async (email: string, password: string) => {
+    const data = await api.post('/auth/login', { email, password });
+    const newState = { user: data.user, token: data.token };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(newState));
+    setAuthState(newState);
+    return data.user;
+  }, []);
+
+  const signup = useCallback(async (email: string, password: string) => {
+    const data = await api.post('/auth/signup', { email, password });
+    const newState = { user: data.user, token: data.token };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(newState));
+    setAuthState(newState);
+    return data.user;
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(AUTH_KEY);
-    setUser(null);
+    setAuthState({ user: null, token: null });
   }, []);
 
   return {
-    user,
+    user: authState.user,
+    token: authState.token,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!authState.token,
     login,
+    signup,
     logout,
   };
 };

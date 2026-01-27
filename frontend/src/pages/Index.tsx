@@ -8,8 +8,7 @@ const Index = () => {
   const { user, isLoading, login, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (email: string) => {
-    login(email);
+  const handleSuccess = () => {
     navigate('/game');
   };
 
@@ -60,7 +59,7 @@ const Index = () => {
     );
   }
 
-  return <LoginForm onLogin={handleLogin} />;
+  return <LoginForm onSuccess={handleSuccess} />;
 };
 
 export default Index;

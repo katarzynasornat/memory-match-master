@@ -5,9 +5,18 @@ import { Trophy } from 'lucide-react';
 interface LeaderboardProps {
   entries: LeaderboardEntry[];
   currentUser?: string;
+  isLoading?: boolean;
 }
 
-export const Leaderboard = ({ entries, currentUser }: LeaderboardProps) => {
+export const Leaderboard = ({ entries, currentUser, isLoading }: LeaderboardProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (entries.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">

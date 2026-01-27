@@ -3,15 +3,18 @@ import { renderHook, act } from '@testing-library/react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 
+// Mock fetch globally
+global.fetch = vi.fn();
+
 describe('useAuth', () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
   it('should start with no user after loading', async () => {
     const { result } = renderHook(() => useAuth());
 
-    // Wait for loading to complete
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
@@ -21,45 +24,64 @@ describe('useAuth', () => {
   });
 
   it('should login successfully', async () => {
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ user: { email: 'test@example.com' }, token: 'mock-token' }),
+    });
+
     const { result } = renderHook(() => useAuth());
 
-    // Wait for initial load
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    act(() => {
-      result.current.login('test@example.com');
+    await act(async () => {
+      await result.current.login('test@example.com', 'password');
     });
 
     expect(result.current.user?.email).toBe('test@example.com');
+    expect(result.current.token).toBe('mock-token');
     expect(result.current.isAuthenticated).toBe(true);
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/auth/login'), expect.any(Object));
   });
 
-  it('should persist user to localStorage', async () => {
+  it('should persist auth state to localStorage', async () => {
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ user: { email: 'test@example.com' }, token: 'mock-token' }),
+    });
+
     const { result } = renderHook(() => useAuth());
 
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    act(() => {
-      result.current.login('test@example.com');
+    await act(async () => {
+      await result.current.login('test@example.com', 'password');
     });
 
-    const stored = localStorage.getItem('memory_game_user');
-    expect(stored).toBe(JSON.stringify({ email: 'test@example.com' }));
+    const stored = localStorage.getItem('memory_game_auth');
+    expect(JSON.parse(stored!)).toEqual({
+      user: { email: 'test@example.com' },
+      token: 'mock-token'
+    });
   });
 
   it('should logout successfully', async () => {
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ user: { email: 'test@example.com' }, token: 'mock-token' }),
+    });
+
     const { result } = renderHook(() => useAuth());
 
     await vi.waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    act(() => {
-      result.current.login('test@example.com');
+    await act(async () => {
+      await result.current.login('test@example.com', 'password');
     });
 
     act(() => {
@@ -67,97 +89,71 @@ describe('useAuth', () => {
     });
 
     expect(result.current.user).toBe(null);
+    expect(result.current.token).toBe(null);
     expect(result.current.isAuthenticated).toBe(false);
-  });
-
-  it('should trim whitespace from email', async () => {
-    const { result } = renderHook(() => useAuth());
-
-    await vi.waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    act(() => {
-      result.current.login('  test@example.com  ');
-    });
-
-    expect(result.current.user?.email).toBe('test@example.com');
+    expect(localStorage.getItem('memory_game_auth')).toBe(null);
   });
 });
 
 describe('useLeaderboard', () => {
+  const mockEntries = [
+    { email: 'player1@example.com', score: 100, round: 2, date: '2024-01-01' }
+  ];
+
   beforeEach(() => {
     localStorage.clear();
+    vi.clearAllMocks();
   });
 
-  it('should start with empty entries', () => {
-    const { result } = renderHook(() => useLeaderboard());
-    expect(result.current.entries).toHaveLength(0);
-  });
-
-  it('should add entry to leaderboard', () => {
-    const { result } = renderHook(() => useLeaderboard());
-
-    act(() => {
-      result.current.addEntry('player1@example.com', 100, 2);
+  it('should fetch entries on mount', async () => {
+    (fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockEntries,
     });
 
-    expect(result.current.entries).toHaveLength(1);
-    expect(result.current.entries[0].email).toBe('player1@example.com');
-    expect(result.current.entries[0].score).toBe(100);
-    expect(result.current.entries[0].round).toBe(2);
-  });
-
-  it('should sort entries by score descending', () => {
     const { result } = renderHook(() => useLeaderboard());
 
-    act(() => {
-      result.current.addEntry('player1@example.com', 100, 1);
-      result.current.addEntry('player2@example.com', 300, 3);
-      result.current.addEntry('player3@example.com', 200, 2);
+    await vi.waitFor(() => {
+      expect(result.current.entries).toEqual(mockEntries);
     });
-
-    expect(result.current.entries[0].email).toBe('player2@example.com');
-    expect(result.current.entries[1].email).toBe('player3@example.com');
-    expect(result.current.entries[2].email).toBe('player1@example.com');
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/leaderboard'), expect.any(Object));
   });
 
-  it('should limit to 10 entries', () => {
-    const { result } = renderHook(() => useLeaderboard());
+  it('should add entry to leaderboard and refresh', async () => {
+    (fetch as any)
+      .mockResolvedValueOnce({ ok: true, json: async () => [] }) // initial fetch
+      .mockResolvedValueOnce({ ok: true, json: async () => ({}) }) // post result
+      .mockResolvedValueOnce({ ok: true, json: async () => mockEntries }); // second fetch
 
-    act(() => {
-      for (let i = 0; i < 15; i++) {
-        result.current.addEntry(`player${i}@example.com`, i * 10, 1);
-      }
+    const { result } = renderHook(() => useLeaderboard('mock-token'));
+
+    await act(async () => {
+      await result.current.addEntry('player1@example.com', 100, 2);
     });
 
-    expect(result.current.entries).toHaveLength(10);
-    // Highest scores should be kept
-    expect(result.current.entries[0].score).toBe(140);
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/leaderboard'),
+      expect.objectContaining({ method: 'POST' })
+    );
+
+    await vi.waitFor(() => {
+      expect(result.current.entries).toEqual(mockEntries);
+    });
   });
 
-  it('should persist entries to localStorage', () => {
-    const { result } = renderHook(() => useLeaderboard());
+  it('should not add entry if no token provided', async () => {
+    (fetch as any).mockResolvedValue({ ok: true, json: async () => [] });
 
-    act(() => {
-      result.current.addEntry('player1@example.com', 100, 1);
+    const { result } = renderHook(() => useLeaderboard(null));
+
+    await act(async () => {
+      await result.current.addEntry('player1@example.com', 100, 2);
     });
 
-    const stored = localStorage.getItem('memory_game_leaderboard');
-    expect(stored).toBeTruthy();
-
-    const parsed = JSON.parse(stored!);
-    expect(parsed).toHaveLength(1);
-  });
-
-  it('should clear leaderboard', () => {
-    const { result } = renderHook(() => useLeaderboard());
-
-    act(() => {
-      result.current.addEntry('player1@example.com', 100, 1);
-      result.current.clearLeaderboard();
-    });
-
-    expect(result.current.entries).toHaveLength(0);
+    // Only the initial GET should have been called
+    expect(fetch).not.toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ method: 'POST' })
+    );
   });
 });

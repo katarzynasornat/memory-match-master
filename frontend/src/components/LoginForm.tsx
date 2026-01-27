@@ -2,36 +2,22 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Gamepad2, Eye, EyeOff } from 'lucide-react';
+import { Gamepad2, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LoginFormProps {
-  onLogin: (email: string) => void;
+  onSuccess: () => void;
 }
 
-const USERS_KEY = 'memory_game_users';
-
-const getStoredUsers = (): Record<string, string> => {
-  try {
-    const stored = localStorage.getItem(USERS_KEY);
-    return stored ? JSON.parse(stored) : {};
-  } catch {
-    return {};
-  }
-};
-
-const saveUser = (email: string, password: string) => {
-  const users = getStoredUsers();
-  users[email.toLowerCase()] = password;
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-};
-
-export const LoginForm = ({ onLogin }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+  const { login, signup } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateEmail = (email: string): string | null => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,10 +30,10 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
     return null;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedEmail = email.trim();
-    const users = getStoredUsers();
+    setError('');
 
     const emailError = validateEmail(trimmedEmail);
     if (emailError) {
@@ -61,30 +47,23 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
       return;
     }
 
-    if (isSignUp) {
-      // Sign Up flow
-      if (users[trimmedEmail.toLowerCase()]) {
-        setError('User with this email already exists');
-        return;
+    setIsSubmitting(true);
+    try {
+      if (isSignUp) {
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          setIsSubmitting(false);
+          return;
+        }
+        await signup(trimmedEmail, password);
+      } else {
+        await login(trimmedEmail, password);
       }
-      if (password !== confirmPassword) {
-        setError('Passwords do not match');
-        return;
-      }
-      saveUser(trimmedEmail, password);
-      onLogin(trimmedEmail);
-    } else {
-      // Login flow
-      const storedPassword = users[trimmedEmail.toLowerCase()];
-      if (!storedPassword) {
-        setError('User not found. Please sign up first.');
-        return;
-      }
-      if (storedPassword !== password) {
-        setError('Incorrect password');
-        return;
-      }
-      onLogin(trimmedEmail);
+      onSuccess();
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -126,6 +105,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
               }}
               className="bg-background border-border focus:border-primary"
               autoComplete="email"
+              disabled={isSubmitting}
               autoFocus
             />
           </div>
@@ -146,11 +126,13 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                 }}
                 className="bg-background border-border focus:border-primary pr-10"
                 autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                disabled={isSubmitting}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                disabled={isSubmitting}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -173,6 +155,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
                 }}
                 className="bg-background border-border focus:border-primary"
                 autoComplete="new-password"
+                disabled={isSubmitting}
               />
             </div>
           )}
@@ -184,8 +167,13 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
           <Button
             type="submit"
             className="w-full bg-primary hover:bg-primary/80 text-primary-foreground font-display text-lg py-6"
+            disabled={isSubmitting}
           >
-            {isSignUp ? 'Create Account' : 'Sign In'}
+            {isSubmitting ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              isSignUp ? 'Create Account' : 'Sign In'
+            )}
           </Button>
 
           <div className="text-center">
@@ -193,6 +181,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
               type="button"
               onClick={toggleMode}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              disabled={isSubmitting}
             >
               {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
             </button>

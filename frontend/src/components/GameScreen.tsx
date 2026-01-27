@@ -8,22 +8,30 @@ import { RoundCompleteModal } from './game/RoundCompleteModal';
 import { Leaderboard } from './Leaderboard';
 import { Button } from '@/components/ui/button';
 import { LogOut, Trophy, RotateCcw } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface GameScreenProps {
   email: string;
+  token: string | null;
   onLogout: () => void;
 }
 
-export const GameScreen = ({ email, onLogout }: GameScreenProps) => {
+export const GameScreen = ({ email, token, onLogout }: GameScreenProps) => {
   const game = useMemoryGame();
-  const { entries, addEntry } = useLeaderboard();
+  const { entries, addEntry, isLoading: isLoadingLeaderboard } = useLeaderboard(token);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [hasSubmittedCurrentGame, setHasSubmittedCurrentGame] = useState(false);
 
-  const handleSubmitScore = useCallback(() => {
+  const handleSubmitScore = useCallback(async () => {
     if (!hasSubmittedCurrentGame) {
-      addEntry(email, game.score, game.round);
-      setHasSubmittedCurrentGame(true);
+      try {
+        await addEntry(email, game.score, game.round);
+        setHasSubmittedCurrentGame(true);
+        toast.success('Score submitted to leaderboard!');
+      } catch (error) {
+        console.error('Failed to submit score:', error);
+        toast.error('Failed to submit score. Please try again.');
+      }
     }
   }, [hasSubmittedCurrentGame, addEntry, email, game.score, game.round]);
 
@@ -105,7 +113,7 @@ export const GameScreen = ({ email, onLogout }: GameScreenProps) => {
               <Trophy className="w-5 h-5 text-warning" />
               Leaderboard
             </h2>
-            <Leaderboard entries={entries} currentUser={email} />
+            <Leaderboard entries={entries} currentUser={email} isLoading={isLoadingLeaderboard} />
           </aside>
         )}
       </main>
