@@ -45,6 +45,18 @@ make run        # Start production server
 make test       # Run tests
 make lint       # Run lint checks
 make format     # Format code
+make migrate    # Run database migrations
+make revision MSG="description" # Create a new migration
+```
+
+## Database Configuration
+
+This project uses SQLAlchemy with Alembic for database management. By default, it uses an SQLite database file (`game.db`) in the root directory.
+
+### Environment Variables
+For production, you can configure a PostgreSQL database by setting the `DATABASE_URL` environment variable:
+```sh
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
 ```
 
 ### Manual Commands

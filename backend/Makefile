@@ -1,4 +1,4 @@
-.PHONY: install run dev test lint format help
+.PHONY: install run dev test lint format migrate revision help
 
 # Default target
 help:
@@ -9,6 +9,8 @@ help:
 	@echo "  make test       - Run the test suite"
 	@echo "  make lint       - Run lint checks (ruff)"
 	@echo "  make format     - Run code formatter (ruff)"
+	@echo "  make migrate    - Run pending database migrations"
+	@echo "  make revision   - Create a new migration revision (usage: make revision MSG=\"your message\")"
 
 install:
 	uv sync
@@ -27,3 +29,9 @@ lint:
 
 format:
 	uv run ruff format .
+
+migrate:
+	uv run alembic upgrade head
+
+revision:
+	uv run alembic revision --autogenerate -m "$(MSG)"
