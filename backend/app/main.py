@@ -75,11 +75,15 @@ async def submit_score(
     current_user_email: str = Depends(get_current_user_email),
 ):
     # Debug logging for 403 issue
-    print(f"DEBUG: Comparing entry.email='{entry.email}' with current_user_email='{current_user_email}'")
-    
+    print(
+        f"DEBUG: Comparing entry.email='{entry.email}' with current_user_email='{current_user_email}'"
+    )
+
     if entry.email.strip().lower() != current_user_email.strip().lower():
         print(f"DEBUG: 403 Forbidden - Email mismatch!")
-        raise HTTPException(status_code=403, detail="Cannot submit score for another user")
+        raise HTTPException(
+            status_code=403, detail="Cannot submit score for another user"
+        )
 
     leaderboard_entry = models.LeaderboardEntry(
         email=entry.email,

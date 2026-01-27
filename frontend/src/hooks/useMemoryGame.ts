@@ -19,21 +19,39 @@ export interface GameState {
 }
 
 const SYMBOLS = ['🚀', '⚡', '🎮', '💎', '🔮', '🌟', '🎯', '🔥'];
+const JOKER_SYMBOL = '⭐';
 const MAX_FAILURES = 10;
 const ROUND_BONUS = 100;
 const MATCH_POINTS = 10;
 const STRIKE_BONUS = 50;
 
-export const createDeck = (): Card[] => {
-  const pairs = [...SYMBOLS, ...SYMBOLS];
-  const shuffled = pairs.sort(() => Math.random() - 0.5);
-  
-  return shuffled.map((symbol, index) => ({
-    id: index,
-    symbol,
-    isFlipped: false,
-    isMatched: false,
-  }));
+export const createDeck = (round: number): Card[] => {
+  const is4x4 = round % 3 === 0;
+
+  if (is4x4) {
+    // 4x4 grid (16 cards, 8 pairs)
+    const pairs = [...SYMBOLS, ...SYMBOLS];
+    const shuffled = pairs.sort(() => Math.random() - 0.5);
+    return shuffled.map((symbol, index) => ({
+      id: index,
+      symbol,
+      isFlipped: false,
+      isMatched: false,
+    }));
+  } else {
+    // 3x3 grid (9 cards total: 4 pairs + 1 pre-matched joker)
+    const selectedSymbols = SYMBOLS.slice(0, 4);
+    const pairs = [...selectedSymbols, ...selectedSymbols];
+    const deckWithJoker = [...pairs, JOKER_SYMBOL];
+    const shuffled = deckWithJoker.sort(() => Math.random() - 0.5);
+
+    return shuffled.map((symbol, index) => ({
+      id: index,
+      symbol,
+      isFlipped: symbol === JOKER_SYMBOL,
+      isMatched: symbol === JOKER_SYMBOL,
+    }));
+  }
 };
 
 export const calculateScore = (
@@ -53,7 +71,7 @@ export const calculateScore = (
 
 export const useMemoryGame = () => {
   const [gameState, setGameState] = useState<GameState>({
-    cards: createDeck(),
+    cards: createDeck(1),
     failures: 0,
     round: 1,
     score: 0,
@@ -65,7 +83,7 @@ export const useMemoryGame = () => {
 
   const resetGame = useCallback(() => {
     setGameState({
-      cards: createDeck(),
+      cards: createDeck(1),
       failures: 0,
       round: 1,
       score: 0,
@@ -79,7 +97,7 @@ export const useMemoryGame = () => {
   const startNextRound = useCallback(() => {
     setGameState(prev => ({
       ...prev,
-      cards: createDeck(),
+      cards: createDeck(prev.round + 1),
       failures: 0,
       isRoundComplete: false,
       selectedCards: [],
