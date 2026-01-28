@@ -2,10 +2,14 @@
 set -e
 
 echo "Waiting for PostgreSQL to be ready..."
-until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\q' 2>/dev/null; do
+# Wait for PostgreSQL port to be open
+while ! nc -z "$POSTGRES_HOST" 5432; do
   >&2 echo "PostgreSQL is unavailable - sleeping"
   sleep 1
 done
+
+# Give PostgreSQL a moment to fully initialize
+sleep 2
 
 echo "PostgreSQL is up - running migrations"
 uv run alembic upgrade head
