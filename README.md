@@ -4,6 +4,8 @@
 
 > **Live Demo:** [https://memory-match-ezux.onrender.com/](https://memory-match-ezux.onrender.com/)
 
+[Screencast from 28.01.2026 02:37:05.webm](https://github.com/user-attachments/assets/80ffee26-ca2f-4ad0-9812-e0f1adf90399)
+
 ## 📖 Problem Description
 This project implements a high-performance **Memory Match** game with a neon-arcade aesthetic.
 *   **The Problem:** Most browser-based memory games are stateless; refreshing the page loses progress, and high scores are local-only.
