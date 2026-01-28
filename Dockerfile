@@ -34,6 +34,9 @@ COPY backend/pyproject.toml backend/uv.lock ./
 # Install backend dependencies
 RUN uv sync --frozen --no-dev
 
+# Copy backend application code
+COPY backend/ .
+
 # Stage 3: Final Combined Image
 FROM python:3.12-slim
 
@@ -53,12 +56,8 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_SYSTEM_PYTHON=1
 
-# Copy backend dependencies from backend-setup stage
-COPY --from=backend-setup /root/.local /root/.local
-COPY --from=backend-setup /app/backend/.venv /app/backend/.venv
-
-# Copy backend application code
-COPY backend/ /app/backend/
+# Copy backend code and dependencies from backend-setup stage
+COPY --from=backend-setup /app/backend /app/backend
 
 # Copy built frontend from frontend-builder stage
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
