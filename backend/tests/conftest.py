@@ -1,10 +1,14 @@
+import os
+
+# Set TESTING env var before importing app.main to prevent database.init_db() execution
+os.environ["TESTING"] = "1"
+
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.database import get_db, Base
-import os
 
 from sqlalchemy.pool import StaticPool
 
