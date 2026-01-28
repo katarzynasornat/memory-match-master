@@ -26,6 +26,32 @@ docker-compose logs -f backend   # View backend logs
 docker-compose restart           # Restart services
 ```
 
+### Option 1b: Combined Container Deployment
+
+For production deployment with a single container running both frontend and backend:
+
+```bash
+# Build and start the combined container
+docker-compose -f docker-compose.deploy.yml up -d
+
+# Access the app at http://localhost:80
+# Frontend and API are both served through nginx
+```
+
+**Architecture:**
+- Single container with nginx serving frontend and proxying `/api/*` to FastAPI backend
+- Supervisor manages both nginx and FastAPI processes
+- PostgreSQL runs in a separate container
+- Optimized for production deployment
+
+**Useful commands:**
+```bash
+docker-compose -f docker-compose.deploy.yml down    # Stop services
+docker-compose -f docker-compose.deploy.yml logs -f # View logs
+docker-compose -f docker-compose.deploy.yml build   # Rebuild container
+```
+
+
 ---
 
 ### Option 2: Local Development (SQLite)
