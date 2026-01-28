@@ -26,3 +26,8 @@ out/
 .stylelintcache
 *.log
 .uv
+
+# Environment variables
+.env
+.env.*
+!.env.example
