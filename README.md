@@ -2,7 +2,7 @@
 
 [![CI/CD Pipeline](https://github.com/katarzynasornat/memory-match-master/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/katarzynasornat/memory-match-master/actions/workflows/ci-cd.yml)
 
-> **Live Demo:** [https://memory-match-ezux.onrender.com/](https://memory-match-master.onrender.com) (Note: Replace with your actual Render URL)
+> **Live Demo:** [https://memory-match-ezux.onrender.com/](https://memory-match-ezux.onrender.com/) (Note: Replace with your actual Render URL)
 
 ## 📖 Problem Description
 This project implements a modern, high-performance Memory Match game aimed at casual gamers who want a retro-arcade experience. The system solves the problem of stateless browser games by providing a robust backend that tracks user scores, maintains a global leaderboard, and ensures fair play through server-side validation.
