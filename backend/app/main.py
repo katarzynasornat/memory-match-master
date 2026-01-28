@@ -14,9 +14,13 @@ if not os.getenv("TESTING"):
     database.init_db()
 
 # Enable CORS for frontend integration
+# Read allowed origins from environment variable, default to wildcard for development
+cors_origins = os.getenv("CORS_ORIGINS", "*")
+allowed_origins = cors_origins.split(",") if cors_origins != "*" else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

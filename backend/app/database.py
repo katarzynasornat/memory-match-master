@@ -8,8 +8,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Default to SQLite for local development
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./game.db")
+# PostgreSQL configuration from environment variables
+# Falls back to SQLite for local development if not set
+POSTGRES_USER = os.getenv("POSTGRES_USER", "memoryuser")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "memorypass")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "memorydb")
+
+# Use DATABASE_URL if provided, otherwise construct PostgreSQL URL
+# Fall back to SQLite only if DATABASE_URL is explicitly set to sqlite
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:5432/{POSTGRES_DB}"
+)
 
 # Use check_same_thread=False only for SQLite
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
