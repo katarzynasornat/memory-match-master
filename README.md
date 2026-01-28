@@ -1,217 +1,116 @@
-# Memory Match Arcade
+# 🎮 Memory Match Arcade
 
-A high-performance Memory Match game with a Neon Arcade theme, featuring a FastAPI backend and a React/Vite frontend.
+[![CI/CD Pipeline](https://github.com/katarzynasornat/memory-match-master/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/katarzynasornat/memory-match-master/actions/workflows/ci-cd.yml)
 
-## 🚀 Quick Start
+> **Live Demo:** [https://memory-match-master.onrender.com](https://memory-match-master.onrender.com) (Note: Replace with your actual Render URL)
 
-### Option 1: Docker (Recommended for Production)
+## 📖 Problem Description
+This project implements a modern, high-performance Memory Match game aimed at casual gamers who want a retro-arcade experience. The system solves the problem of stateless browser games by providing a robust backend that tracks user scores, maintains a global leaderboard, and ensures fair play through server-side validation.
 
-**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and Docker Compose
-
-```bash
-# Start everything (PostgreSQL + Backend + Frontend)
-docker-compose up -d
-
-# Access the app
-# Frontend: http://localhost
-# Backend API: http://localhost:3000/api/docs
-```
-
-**That's it!** The app runs with PostgreSQL, automatic migrations, and seed data.
-
-**Useful commands:**
-```bash
-docker-compose down              # Stop all services
-docker-compose logs -f backend   # View backend logs
-docker-compose restart           # Restart services
-```
-
-### Option 1b: Combined Container Deployment
-
-For production deployment with a single container running both frontend and backend:
-
-```bash
-# Build and start the combined container
-docker-compose -f docker-compose.deploy.yml up -d
-
-# Access the app at http://localhost:80
-# Frontend and API are both served through nginx
-```
-
-**Architecture:**
-- Single container with nginx serving frontend and proxying `/api/*` to FastAPI backend
-- Supervisor manages both nginx and FastAPI processes
-- PostgreSQL runs in a separate container
-- Optimized for production deployment
-
-**Useful commands:**
-```bash
-docker-compose -f docker-compose.deploy.yml down    # Stop services
-docker-compose -f docker-compose.deploy.yml logs -f # View logs
-docker-compose -f docker-compose.deploy.yml build   # Rebuild container
-```
-
-
----
-
-### Option 2: Local Development (SQLite)
-
-**Prerequisites:** [uv](https://github.com/astral-sh/uv) and Node.js
-
-```bash
-# Install dependencies
-npm run install:all
-
-# Run both frontend and backend
-npm run dev
-```
-
-- Backend: `http://localhost:3000`
-- Frontend: `http://localhost:8080`
-- Uses SQLite (`backend/game.db`) automatically
-
-**Or run separately:**
-```bash
-# Terminal 1 - Backend
-cd backend && make dev
-
-# Terminal 2 - Frontend
-cd frontend && npm run dev
-```
-
----
-
-
-## 🔄 Deployment Options
-
-| Feature | Combined Deployment | Docker Development | Local Development |
-|---------|---------------------|-------------------|-------------------|
-| **Database** | PostgreSQL | PostgreSQL | SQLite |
-| **Setup** | `docker-compose -f docker-compose.deploy.yml up -d` | `docker-compose up -d` | `npm run dev` |
-| **Architecture** | Single container (nginx + FastAPI) | Separate containers | Separate processes |
-| **Use Case** | Production deployment | Development with PostgreSQL | Quick development |
-| **Ports** | Frontend + API: 80 | Frontend: 80, Backend: 3000 | Frontend: 8080, Backend: 3000 |
-
-
----
-
-## 💾 Environment Configuration
-
-**Docker** uses `.env` in the root directory:
-```bash
-cp .env.example .env  # Copy template
-# Edit .env to customize ports, database credentials, etc.
-```
-
-**Local development** uses SQLite automatically - no configuration needed!
-
-## 📁 Project Structure
-
-```text
-.
-├── backend/            # FastAPI Application
-├── backend/            # FastAPI Application
-│   ├── app/            # Core logic (models, schemas, routes)
-│   ├── alembic/        # Database migrations
-│   ├── openapi.yaml    # API Specification
-│   └── tests/          # Backend test suite
-├── frontend/           # React/Vite Application
-│   ├── src/hooks/      # Custom hooks (Auth, Leaderboard, Game)
-│   ├── src/components/ # UI Components
-│   └── src/test/       # Frontend test suite
-└── AGENTS.md           # Instructions for AI development
-```
-
-## 🗄️ Database
-
-- **Docker**: PostgreSQL with persistent volumes (data survives restarts)
-- **Local**: SQLite (`backend/game.db`) - created automatically on first run
-- **Migrations**: Managed by Alembic, run automatically in Docker
-- **Security**: Passwords hashed with bcrypt
-
-**Test user** (available in both environments):
-- Email: `tester@example.com`
-- Password: `password123`
-
-## 🧪 Testing
-
-**All tests (from root):**
-```bash
-npm test  # Runs backend + frontend tests
-```
-
-**Backend only:**
-```bash
-cd backend
-make test              # Unit tests (51 tests)
-make test-integration  # Integration tests (28 tests)
-```
-
-**Frontend only:**
-```bash
-cd frontend
-npm test  # 23 tests
-```
+**Key Features:**
+*   **Gameplay:** Classic card matching mechanics with a neon aesthetic.
+*   **Persistence:** Global leaderboard storing top scores in a database.
+*   **Security:** JWT authentication and secure password hashing.
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: React, TypeScript, Vite, Tailwind CSS, Shadcn UI, Vitest.
-- **Backend**: Python, FastAPI, SQLAlchemy, Alembic, bcrypt, pytest, `uv`.
-- **Database**: SQLite (local) / PostgreSQL (production/Docker).
-- **Deployment**: Docker, Docker Compose, Nginx.
+*   **Frontend:**
+    *   **React 18** with **Vite** (Fast build tool)
+    *   **TypeScript** (Type safety)
+    *   **Tailwind CSS** (Styling)
+    *   **Shadcn UI** (Component library)
+*   **Backend:**
+    *   **Python 3.12**
+    *   **FastAPI** (High-performance Async Framework)
+    *   **SQLAlchemy** (ORM)
+    *   **Alembic** (Database Migrations)
+    *   **Pydantic** (Data validation)
+*   **Database:**
+    *   **SQLite** (Local Development)
+    *   **PostgreSQL** (Production/Render)
+*   **DevOps:**
+    *   **Docker & Docker Compose** (Containerization)
+    *   **Nginx** (Reverse Proxy & Static Asset Serving)
+    *   **GitHub Actions** (CI/CD)
 
-## 🔧 Troubleshooting
+## 🤖 AI Development & Tools
+This project was built with the assistance of **Google's Agentic coding tools**.
+*   **Coding Assistant**: Used for scaffolding the FastAPI backend, creating React components, and generating unit tests.
+*   **Deployment Planning**: The agent analyzed constraints to recommend Render.com and generated the `render.yaml` Infrastructure-as-Code.
+*   **Debugging**: Agentic workflows were used to diagnose database connection issues and fix "File not found" errors during Docker builds.
 
-### Docker Issues
+## 🚀 How to Run
 
-**Port already in use:**
-```sh
-# Change ports in .env file
-FRONTEND_PORT=8080
-BACKEND_PORT=3001
-POSTGRES_PORT=5433
+### Option 1: Docker (Recommended)
+The easiest way to run the full stack (Frontend + Backend + DB).
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/katarzynasornat/memory-match-master.git
+cd memory-match-master
+
+# 2. Start the application
+docker-compose up -d
+
+# 3. Access
+# Frontend: http://localhost
+# API Docs: http://localhost:3000/api/docs
 ```
 
-**Database connection errors:**
-```sh
-# Check if PostgreSQL is healthy
-docker-compose ps
+### Option 2: Local Development
+Run services individually for development.
 
-# View backend logs
-docker-compose logs backend
-
-# Restart services
-docker-compose restart
-```
-
-**Cannot connect to backend from frontend:**
-- Ensure `VITE_API_URL` in `.env` matches your backend URL
-- Check CORS settings in backend (default allows all origins)
-- Verify backend is running: `curl http://localhost:3000/`
-
-**Migrations not running:**
-```sh
-# Manually run migrations
-docker-compose exec backend uv run alembic upgrade head
-
-# Check migration status
-docker-compose exec backend uv run alembic current
-```
-
-### Local Development Issues
-
-**Backend won't start:**
-```sh
+**Backend:**
+```bash
 cd backend
-uv sync  # Reinstall dependencies
+# Install dependencies using uv (fast python package manager)
+uv sync
+# Run server
 make dev
 ```
 
-**Frontend build errors:**
-```sh
+**Frontend:**
+```bash
 cd frontend
-rm -rf node_modules package-lock.json
 npm install
 npm run dev
 ```
 
+## 🧪 Testing
+
+The project includes both unit and integration tests.
+
+```bash
+# Backend Tests (using pytest)
+cd backend
+make test              # Run unit tests
+make test-integration  # Run integration tests
+
+# Frontend Tests (using Vitest)
+cd frontend
+npm test
+```
+
+## ☁️ Deployment (Render)
+
+The project is configured for **Render.com** using `render.yaml` (Blueprints).
+
+1.  Push code to GitHub.
+2.  In Render, create a new **Blueprint Instance**.
+3.  Connect this repository.
+4.  Render will automatically:
+    *   Build the Docker image.
+    *   Provision a PostgreSQL database.
+    *   Deploy the service.
+
+### CI/CD Pipeline
+A GitHub Action (`.github/workflows/ci-cd.yml`) is configured to:
+1.  Run Backend & Frontend tests on every push.
+2.  Trigger a Deploy Hook to Render if tests pass on `main`.
+
+## 📜 API Documentation
+When running locally or in Docker, visit `/api/docs` for the interactive Swagger UI.
+
+*   `POST /api/auth/register`: Register new user.
+*   `POST /api/games/score`: Submit a game score.
+*   `GET /api/leaderboard`: specific top scores.
