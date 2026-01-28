@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: memory-match-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-memoryuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-memorypass}
+      POSTGRES_DB: ${POSTGRES_DB:-memorydb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-memoryuser}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - memory-match-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: memory-match-backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-memoryuser}:${POSTGRES_PASSWORD:-memorypass}@postgres:5432/${POSTGRES_DB:-memorydb}
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-memoryuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-memorypass}
+      POSTGRES_DB: ${POSTGRES_DB:-memorydb}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost,http://localhost:80}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - memory-match-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    container_name: memory-match-frontend
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - memory-match-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  memory-match-network:
+    driver: bridge
