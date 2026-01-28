@@ -81,14 +81,17 @@ cd frontend && npm run dev
 
 ---
 
-## 🔄 Docker vs Local Development
 
-| Feature | Docker | Local |
-|---------|--------|-------|
-| **Database** | PostgreSQL | SQLite |
-| **Setup** | `docker-compose up -d` | `npm run dev` |
-| **Use Case** | Production, deployment | Development, testing |
-| **Ports** | Frontend: 80, Backend: 3000 | Frontend: 8080, Backend: 3000 |
+## 🔄 Deployment Options
+
+| Feature | Combined Deployment | Docker Development | Local Development |
+|---------|---------------------|-------------------|-------------------|
+| **Database** | PostgreSQL | PostgreSQL | SQLite |
+| **Setup** | `docker-compose -f docker-compose.deploy.yml up -d` | `docker-compose up -d` | `npm run dev` |
+| **Architecture** | Single container (nginx + FastAPI) | Separate containers | Separate processes |
+| **Use Case** | Production deployment | Development with PostgreSQL | Quick development |
+| **Ports** | Frontend + API: 80 | Frontend: 80, Backend: 3000 | Frontend: 8080, Backend: 3000 |
+
 
 ---
 
