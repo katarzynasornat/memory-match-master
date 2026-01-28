@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: memory-match
+    runtime: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 80
+      - key: DATABASE_URL
+        fromDatabase:
+          name: memory-match-db
+          property: connectionString
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: memory-match-db
+          property: host
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: memory-match-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: memory-match-db
+          property: password
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: memory-match-db
+          property: database
+
+databases:
+  - name: memory-match-db
+    plan: free
+    region: oregon
+    databaseName: memorydb
+    user: memoryuser
