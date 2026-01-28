@@ -2,99 +2,79 @@
 
 A high-performance Memory Match game with a Neon Arcade theme, featuring a FastAPI backend and a React/Vite frontend.
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### The Quick Way (Run both at once)
-Prerequisites: [uv](https://github.com/astral-sh/uv) and Node.js.
+### Option 1: Docker (Recommended for Production)
 
-```sh
-# One-time setup
+**Prerequisites:** [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+
+```bash
+# Start everything (PostgreSQL + Backend + Frontend)
+docker-compose up -d
+
+# Access the app
+# Frontend: http://localhost
+# Backend API: http://localhost:3000/api/docs
+```
+
+**That's it!** The app runs with PostgreSQL, automatic migrations, and seed data.
+
+**Useful commands:**
+```bash
+docker-compose down              # Stop all services
+docker-compose logs -f backend   # View backend logs
+docker-compose restart           # Restart services
+```
+
+---
+
+### Option 2: Local Development (SQLite)
+
+**Prerequisites:** [uv](https://github.com/astral-sh/uv) and Node.js
+
+```bash
+# Install dependencies
 npm run install:all
 
-# Run both frontend and backend concurrently
+# Run both frontend and backend
 npm run dev
 ```
-The backend will be at `http://localhost:3000` and the frontend at `http://localhost:8080`.
 
+- Backend: `http://localhost:3000`
+- Frontend: `http://localhost:8080`
+- Uses SQLite (`backend/game.db`) automatically
 
----
+**Or run separately:**
+```bash
+# Terminal 1 - Backend
+cd backend && make dev
 
-## 🐳 Docker Setup (Production)
-
-### Quick Start with Docker Compose
-
-Prerequisites: [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
-
-```sh
-# 1. Copy environment template
-cp .env.example .env
-
-# 2. (Optional) Edit .env to customize database credentials and ports
-
-# 3. Build and start all services
-docker-compose up --build
-
-# 4. Access the application
-# Frontend: http://localhost:80
-# Backend API: http://localhost:3000
-# API Docs: http://localhost:3000/api/docs
-```
-
-To stop the services:
-```sh
-docker-compose down
-
-# To also remove volumes (database data):
-docker-compose down -v
-```
-
-### Environment Configuration
-
-The `.env` file controls all configuration. Key variables:
-
-- **Database**: `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`
-- **Ports**: `BACKEND_PORT` (default: 3000), `FRONTEND_PORT` (default: 80)
-- **CORS**: `CORS_ORIGINS` (comma-separated list of allowed origins)
-- **API URL**: `VITE_API_URL` (frontend API endpoint)
-
-### Database Management
-
-**Access PostgreSQL container:**
-```sh
-docker-compose exec postgres psql -U memoryuser -d memorydb
-```
-
-**Run migrations manually:**
-```sh
-docker-compose exec backend uv run alembic upgrade head
-```
-
-**View logs:**
-```sh
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f postgres
+# Terminal 2 - Frontend
+cd frontend && npm run dev
 ```
 
 ---
 
-## 💻 Local Development
+## 🔄 Docker vs Local Development
 
-### The Quick Way (Run both at once)
+| Feature | Docker | Local |
+|---------|--------|-------|
+| **Database** | PostgreSQL | SQLite |
+| **Setup** | `docker-compose up -d` | `npm run dev` |
+| **Use Case** | Production, deployment | Development, testing |
+| **Ports** | Frontend: 80, Backend: 3000 | Frontend: 8080, Backend: 3000 |
 
-#### 1. Backend (FastAPI)
-```sh
-cd backend
-make install
-make dev
+---
+
+## 💾 Environment Configuration
+
+**Docker** uses `.env` in the root directory:
+```bash
+cp .env.example .env  # Copy template
+# Edit .env to customize ports, database credentials, etc.
 ```
 
-#### 2. Frontend (React + Vite)
-```sh
-cd frontend
-npm install
-npm run dev
-```
+**Local development** uses SQLite automatically - no configuration needed!
 
 ## 📁 Project Structure
 
@@ -113,43 +93,35 @@ npm run dev
 └── AGENTS.md           # Instructions for AI development
 ```
 
-## 🗄️ Database Persistence
+## 🗄️ Database
 
-The project uses **SQLAlchemy** with **Alembic** for migrations:
-- **Docker (Production)**: Uses PostgreSQL in a containerized environment with persistent volumes.
-- **Local Development**: Uses SQLite (`game.db`) automatically on first run.
-- **Custom Setup**: Supports any PostgreSQL instance via the `DATABASE_URL` environment variable.
-- **Security**: Passwords are securely hashed using `bcrypt`.
+- **Docker**: PostgreSQL with persistent volumes (data survives restarts)
+- **Local**: SQLite (`backend/game.db`) - created automatically on first run
+- **Migrations**: Managed by Alembic, run automatically in Docker
+- **Security**: Passwords hashed with bcrypt
 
-### 🔍 How to Verify Locally
-1. **Initial Run**: Run `npm run dev` to start the app.
-2. **Manual Seeding** (Optional): If you want to force-seed the leaderboard:
-   ```sh
-   cd backend && uv run python -m app.init_db --seed
-   ```
-3. **Query from Terminal**: Use `sqlite3` to view the mocked rows directly:
-   ```sh
-   sqlite3 backend/game.db "SELECT * FROM leaderboard_entries ORDER BY score DESC LIMIT 5;"
-   ```
-4. **Test Persistence**: Create an account, submit a score, restart the backend, and verify your data remains saved!
+**Test user** (available in both environments):
+- Email: `tester@example.com`
+- Password: `password123`
 
 ## 🧪 Testing
 
-### Run All Tests (Root)
-```sh
-npm test
+**All tests (from root):**
+```bash
+npm test  # Runs backend + frontend tests
 ```
 
-### Backend Tests
-```sh
+**Backend only:**
+```bash
 cd backend
-make test
+make test              # Unit tests (51 tests)
+make test-integration  # Integration tests (28 tests)
 ```
 
-### Frontend Tests
-```sh
+**Frontend only:**
+```bash
 cd frontend
-npm test
+npm test  # 23 tests
 ```
 
 ## 🛠️ Technology Stack
