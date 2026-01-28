@@ -7,7 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from . import models, schemas, database, security
 
-app = FastAPI(title="Memory Match API", docs_url="/api/docs", redoc_url="/api/redoc")
+# Configure FastAPI to run behind a proxy (nginx strips /api prefix)
+app = FastAPI(
+    title="Memory Match API",
+    root_path="/api",  # Tells FastAPI it is mounted at /api
+    docs_url="/docs",  # Default
+    redoc_url="/redoc",  # Default
+    openapi_url="/openapi.json",  # Default
+)
 
 # Initialize database (skip during testing)
 if not os.getenv("TESTING"):
